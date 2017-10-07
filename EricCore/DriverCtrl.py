@@ -6,7 +6,7 @@ import ctypes
 from EricCore.ScsiCmd import SCS_DATA_IN, SCS_DATA_OUT
 
 class DriverCtrl:
-    m_winDll = windll.LoadLibrary(r'E:\GitHub\CPP_Project\UsbCommander\Debug\DriveCtrl.dll')
+    m_winDll = windll.LoadLibrary(r'DriveCtrl.dll')
     def get_driver_list(self):
         lib = self.m_winDll
         nameColls = []
