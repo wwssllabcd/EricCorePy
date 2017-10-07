@@ -1,8 +1,8 @@
 
 
-from core.ScsiCmd import ScsiCmd, UfiCmdSet
-from core.QtUtility import QtUtility
-from core.ScsiCmd import SCS_DATA_IN, SCS_DATA_OUT
+from EricCore.ScsiCmd import ScsiCmd, UfiCmdSet
+from EricCore.QtUtility import QtUtility
+from EricCore.ScsiCmd import SCS_DATA_IN, SCS_DATA_OUT
 
 class CmderForm:
     cboDriverSel = 0
