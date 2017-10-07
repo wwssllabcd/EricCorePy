@@ -3,7 +3,7 @@
 from ctypes import *
 import ctypes
 
-from ScsiCmd import SCS_DATA_IN, SCS_DATA_OUT
+from core.ScsiCmd import SCS_DATA_IN, SCS_DATA_OUT
 
 class DriverCtrl:
     m_winDll = windll.LoadLibrary(r'E:\GitHub\CPP_Project\UsbCommander\Debug\DriveCtrl.dll')

@@ -1,12 +1,12 @@
 
 
 
-
-from DriverCtrl import DriverCtrl
 from UsbCmderCore.CmderView import CmderView, CmderForm
-from ScsiCmd import SCS_DATA_IN, SCS_DATA_OUT
-from EricUtility import EricUtility
-from QtUtility import QtUtility
+
+from core.DriverCtrl import DriverCtrl
+from core.ScsiCmd import SCS_DATA_IN, SCS_DATA_OUT
+from core.EricUtility import EricUtility
+from core.QtUtility import QtUtility
 
 
 class CmderModule:
