@@ -14,6 +14,8 @@ class EricUtility:
 
             if (cnt%0x10) == 0:
                 str1 += "\r\n"
-                
-                
         return str1
+
+    def to_file(self, path, data):
+        with open(path, 'w', -1, 'utf-8') as f:
+            f.write(data)
