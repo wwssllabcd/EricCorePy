@@ -1,13 +1,10 @@
 
 
 class QtUtility:
-    def set_qcbobox(self, qcbobox, itemList):
-        qcbobox.clear()
+    def set_combobox(self, cbobox, itemList):
+        cbobox.clear()
         for item in itemList:
-            qcbobox.addItem(item)
-
-    def hex_qstr_to_int(self, hexQStr):
-        return int(str(hexQStr), 16)
+            cbobox.addItem(item)
 
     def show_alert(self, QtGui, msg):
         msgBox = QtGui.QMessageBox()
