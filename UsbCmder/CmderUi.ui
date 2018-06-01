@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>828</width>
+    <height>741</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Courier New</family>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>UsbCmder</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>0</y>
+     <width>101</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Dir</string>
+   </property>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>81</width>
+      <height>82</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLineEdit" name="txtDataLen"/>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="rdoDataIn">
+       <property name="text">
+        <string>DataIn</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="rdoDataOut">
+       <property name="text">
+        <string>DataOut</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QComboBox" name="cboCmdSel">
+   <property name="geometry">
+    <rect>
+     <x>67</x>
+     <y>70</y>
+     <width>201</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Courier New</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="txtMainMsg">
+   <property name="geometry">
+    <rect>
+     <x>7</x>
+     <y>180</y>
+     <width>451</width>
+     <height>541</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Courier New</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOn</enum>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAsNeeded</enum>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>7</x>
+     <y>120</y>
+     <width>381</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>1</number>
+    </property>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_00"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_01"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_02"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_03"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_04"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_05"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_06"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_07"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_08"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_09"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_10"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_11"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>7</x>
+     <y>20</y>
+     <width>261</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QComboBox" name="cboDriveSel"/>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnRefresh">
+      <property name="text">
+       <string>Refresh</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnExecute">
+      <property name="text">
+       <string>Execute</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>160</y>
+     <width>391</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Courier New</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="txtAscii">
+   <property name="geometry">
+    <rect>
+     <x>470</x>
+     <y>180</y>
+     <width>341</width>
+     <height>541</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>74</y>
+     <width>51</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>CmdSel</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
