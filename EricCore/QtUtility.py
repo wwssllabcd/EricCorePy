@@ -11,3 +11,7 @@ class QtUtility:
         msgBox.setWindowTitle('Alert')
         msgBox.setText(msg)
         msgBox.exec_()
+
+
+    def is_rdo_check(self, rdoBtn):
+        return rdoBtn.isChecked()

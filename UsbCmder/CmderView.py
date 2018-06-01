@@ -1,26 +1,23 @@
 
-from EricCore.ScsiCmd import *
+from EricCore.ScsiCmd.ScsiCmdUtility import *
 from EricCore.EricUtility import EricUtility
 from EricCore.QtUtility import QtUtility
 
+
 class CmderView():
-    def __init__(self, ui):
+    def __init__(self):
         self.m_u = EricUtility()
         self.m_du = QtUtility()
-        self.init_compoment(ui);
-        
 
-    def init_compoment(self, ui):
-        self.m_mainMsg = ui.txtMainMsg
-        self.m_cmdSel = ui.cboCmdSel
-        self.m_cdb = [ui.txtCdb_00, ui.txtCdb_01, ui.txtCdb_02, ui.txtCdb_03, ui.txtCdb_04, ui.txtCdb_05,
-                      ui.txtCdb_06, ui.txtCdb_07, ui.txtCdb_08, ui.txtCdb_09, ui.txtCdb_10, ui.txtCdb_11
-                      ]
+        self.m_mainMsg = None
+        self.m_secondMsg = None
+        self.m_cmdSel = None
+        self.m_cdb = []
 
-        self.m_dataLen = ui.txtDataLen
-        self.m_dataIn = ui.rdoDataIn
-        self.m_dataOut = ui.rdoDataOut
-        self.m_driveSel = ui.cboDriveSel
+        self.m_dataLen = None
+        self.m_dataIn = None
+        self.m_dataOut = None
+        self.m_driveSel = None
 
     def refresh(self, item):
         self.m_du.set_combobox(self.m_driveSel, item)
@@ -41,3 +38,38 @@ class CmderView():
             self.m_dataIn.setChecked(True)
         else:
             self.m_dataOut.setChecked(True)
+
+    def get_cur_drive_select(self):
+        return self.m_driveSel.currentIndex()
+
+    def show_main_msg(self, msg):
+        if self.m_mainMsg != None:
+            self.m_mainMsg.setText(msg)
+        else:
+            print("main msg is None")
+
+    def show_second_msg(self, msg):
+        if self.m_secondMsg != None:
+            self.m_secondMsg.setText(msg)
+        else:
+            print("second msg is None")
+                
+
+    def is_dataIn_check(self):
+        if self.m_du.is_rdo_check(self.m_dataIn):
+            return True
+        return False
+
+    def get_cmd_from_form(self):
+        cmd = ScsiCmdObj()
+        for i in range(12):
+            cmd.cdb[i] = self.m_u.hex_string_to_int(self.m_cdb[i].text())
+
+        cmd.len = self.m_u.hex_string_to_int(self.m_dataLen.text())
+
+        if self.is_dataIn_check():
+            cmd.direct = SCS_DATA_IN
+        else:
+            cmd.direct = SCS_DATA_OUT
+
+        return cmd

@@ -1,12 +1,18 @@
-
-
 from ctypes import *
 import ctypes
 
-from EricCore.ScsiCmd import SCS_DATA_IN, SCS_DATA_OUT
+from EricCore.ScsiCmd.ScsiCmdUtility import *
+
 
 class DriverCtrl:
-    m_winDll = windll.LoadLibrary(r'DriveCtrl.dll')
+    m_winDll = windll.LoadLibrary(r'.\\EricCore\\DriveCtrl.dll')
+
+    def get_driver_name_list(self):
+        return self.get_driver_list()[0]
+
+    def get_driver_handle_list(self):
+        return self.get_driver_list()[1]
+        
     def get_driver_list(self):
         lib = self.m_winDll
         nameColls = []
@@ -19,7 +25,7 @@ class DriverCtrl:
             handle = lib.ds_get_handle(ds, i)
             lib.ds_get_name.restype = ctypes.c_char_p
             name = lib.ds_get_name(ds, 0, ctypes.c_char_p(b''))
-            
+
             nameColls.append(chr(name[0]))
             handles.append(handle)
 
@@ -30,12 +36,11 @@ class DriverCtrl:
         lib = self.m_winDll
         ds = lib.ds_get_ds()
         lib.ds_release(ds)
- 
-    def send_cmd(self, handle, cmd, rwData):
-        lib = self.m_winDll
 
+    def send_cmd(self, handle, cmd, wDataBuf):
+        lib = self.m_winDll
         cbuf_cdb = (c_ubyte*12)()
-        cBuf     = (c_ubyte*65536)()
+        cBuf = (c_ubyte*65536)()
         # setup cdb
         for i in range(12):
             cbuf_cdb[i] = cmd.cdb[i]
@@ -43,10 +48,13 @@ class DriverCtrl:
         # setup write data
         if cmd.direct == SCS_DATA_OUT:
             for i in range(cmd.len):
-                cBuf[i] = rwData[i]
+                cBuf[i] = wDataBuf[i]
 
         lib.usbcmd_sendCommand(handle, cbuf_cdb, cBuf, cmd.len, cmd.direct)
-        
+
+        res = []
         if cmd.direct == SCS_DATA_IN:
             for i in range(cmd.len):
-                rwData.append( cBuf[i])
+                res.append(cBuf[i])
+
+        return res

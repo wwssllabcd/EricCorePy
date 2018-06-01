@@ -16,9 +16,22 @@ class EricUtility:
                 str1 += "\r\n"
         return str1
 
+    def make_ascii_table(self, dataList):
+        str1 = ""
+        cnt = 0
+        for d in dataList:
+            str1 += chr(d)
+            cnt += 1
+            if (cnt % 0x10) == 0:
+                str1 += "\r\n"
+        return str1
+
     def to_file(self, path, data):
         with open(path, 'w', -1, 'utf-8') as f:
             f.write(data)
 
     def to_hex_string(self, value):
         return format(value, '02X')
+
+    def hex_string_to_int(self, value):
+        return int(value, 16)
