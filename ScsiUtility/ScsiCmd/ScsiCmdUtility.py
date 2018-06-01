@@ -1,7 +1,7 @@
 
 
-from EricCore.ScsiCmd.UfiCmd import *
-from EricCore.ScsiCmd.ExtenCmd import *
+from .UfiCmd import *
+#from ExtenCmd import *
 
 
 class ScsiCmdUtility:
@@ -10,8 +10,8 @@ class ScsiCmdUtility:
         ufi = UfiCmdSet()
         cmdColls.extend(ufi.get_cmd_colls())
 
-        extcmd = ExtendCmd()
-        cmdColls.extend(extcmd.get_cmd_colls())
+        #extcmd = ExtendCmd()
+        #cmdColls.extend(extcmd.get_cmd_colls())
 
         return cmdColls
     

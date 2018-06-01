@@ -1,7 +1,7 @@
-from EricCore.ScsiCmd.ScsiCmdUtility import *
-from EricCore.DriverCtrl import *
-from EricCore.EricUtility import *
-from UsbCmder.CmderView import CmderView
+from EricCorePy.ScsiUtility.ScsiCmd.ScsiCmdUtility import *
+from EricCorePy.ScsiUtility.DriverCtrl import *
+from EricCorePy.Utility.EricUtility import *
+from EricCorePy.UsbCmder.CmderView import CmderView
 
 
 class CmderCtrller:

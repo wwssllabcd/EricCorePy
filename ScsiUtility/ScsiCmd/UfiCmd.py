@@ -1,5 +1,5 @@
 
-from EricCore.ScsiCmd.ScsiCmdObj import *
+from .ScsiCmdObj import *
 
 
 class UfiCmdSet:

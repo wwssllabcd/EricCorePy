@@ -1,7 +1,7 @@
 
-from EricCore.ScsiCmd.ScsiCmdUtility import *
-from EricCore.EricUtility import EricUtility
-from EricCore.QtUtility import QtUtility
+from EricCorePy.ScsiUtility.ScsiCmd.ScsiCmdUtility import *
+from EricCorePy.Utility.EricUtility import EricUtility
+from EricCorePy.QtUtility.QtUtility import QtUtility
 
 
 class CmderView():

@@ -1,11 +1,11 @@
 from ctypes import *
 import ctypes
 
-from EricCore.ScsiCmd.ScsiCmdUtility import *
+from .ScsiCmd.ScsiCmdUtility import *
 
 
 class DriverCtrl:
-    m_winDll = windll.LoadLibrary(r'.\\EricCore\\DriveCtrl.dll')
+    m_winDll = windll.LoadLibrary(r'.\\EricCorePy\\ScsiUtility\\DriveCtrl.dll')
 
     def get_driver_name_list(self):
         return self.get_driver_list()[0]
