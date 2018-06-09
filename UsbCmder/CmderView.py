@@ -1,7 +1,7 @@
 
-from EricCorePy.ScsiUtility.ScsiCmd.ScsiCmdUtility import *
-from EricCorePy.Utility.EricUtility import EricUtility
-from EricCorePy.QtUtility.QtUtility import QtUtility
+from EricCore.DriveCtrl.ScsiCmd.ScsiCmdUtility import *
+from EricCore.Utility.EricUtility import EricUtility
+from EricCore.Utility.QtUtility import QtUtility
 
 
 class CmderView():
@@ -18,6 +18,7 @@ class CmderView():
         self.m_dataIn = None
         self.m_dataOut = None
         self.m_driveSel = None
+        self.m_qtMsgBox = None
 
     def refresh(self, item):
         self.m_du.set_combobox(self.m_driveSel, item)
@@ -29,7 +30,7 @@ class CmderView():
         self.m_du.set_combobox(self.m_cmdSel, item)
 
     def change_select_cmd(self, cmd):
-        for i in range(12):
+        for i in range(len(self.m_cdb)):
             s = self.m_u.to_hex_string(cmd.cdb[i])
             self.m_cdb[i].setText(s)
         self.m_dataLen.setText(self.m_u.to_hex_string(cmd.len))
@@ -53,7 +54,6 @@ class CmderView():
             self.m_secondMsg.setText(msg)
         else:
             print("second msg is None")
-                
 
     def is_dataIn_check(self):
         if self.m_du.is_rdo_check(self.m_dataIn):
@@ -62,7 +62,7 @@ class CmderView():
 
     def get_cmd_from_form(self):
         cmd = ScsiCmdObj()
-        for i in range(12):
+        for i in range(len(self.m_cdb)):
             cmd.cdb[i] = self.m_u.hex_string_to_int(self.m_cdb[i].text())
 
         cmd.len = self.m_u.hex_string_to_int(self.m_dataLen.text())
@@ -71,5 +71,7 @@ class CmderView():
             cmd.direct = SCS_DATA_IN
         else:
             cmd.direct = SCS_DATA_OUT
-
         return cmd
+
+    def show_alert(self, msg):
+        self.m_du.show_alert(self.m_qtMsgBox, msg)

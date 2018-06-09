@@ -1,32 +1,41 @@
 from ctypes import *
 import ctypes
-
+import os
 from .ScsiCmd.ScsiCmdUtility import *
+
+CDB_SIZE = 16
 
 
 class DriverCtrl:
-    m_winDll = windll.LoadLibrary(r'.\\EricCorePy\\ScsiUtility\\DriveCtrl.dll')
+    dllPath = os.path.dirname(__file__) + "\\DriveCtrl_w32.dll"
+
+    m_winDll = windll.LoadLibrary(dllPath)
 
     def get_driver_name_list(self):
         return self.get_driver_list()[0]
 
     def get_driver_handle_list(self):
         return self.get_driver_list()[1]
-        
+
+    def get_ds(self):
+        lib = self.m_winDll
+        ds = lib.ds_get_ds(3, ctypes.c_char_p(b'usbstor'))
+        return ds
+
     def get_driver_list(self):
         lib = self.m_winDll
         nameColls = []
         handles = []
 
-        ds = lib.ds_get_ds()
+        # ds = lib.ds_get_ds()
+        ds = self.get_ds()
         cnt = lib.ds_get_cnt(ds)
 
         for i in range(cnt):
             handle = lib.ds_get_handle(ds, i)
             lib.ds_get_name.restype = ctypes.c_char_p
             name = lib.ds_get_name(ds, 0, ctypes.c_char_p(b''))
-
-            nameColls.append(chr(name[0]))
+            nameColls.append(str(name))
             handles.append(handle)
 
         driverList = [nameColls, handles]
@@ -34,15 +43,15 @@ class DriverCtrl:
 
     def release_driver_list(self):
         lib = self.m_winDll
-        ds = lib.ds_get_ds()
+        ds = self.get_ds()
         lib.ds_release(ds)
 
     def send_cmd(self, handle, cmd, wDataBuf):
         lib = self.m_winDll
-        cbuf_cdb = (c_ubyte*12)()
+        cbuf_cdb = (c_ubyte*CDB_SIZE)()
         cBuf = (c_ubyte*65536)()
         # setup cdb
-        for i in range(12):
+        for i in range(CDB_SIZE):
             cbuf_cdb[i] = cmd.cdb[i]
 
         # setup write data

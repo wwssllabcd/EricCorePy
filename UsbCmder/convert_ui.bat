@@ -1,1 +1,1 @@
-pyuic5 CmderUi.ui -o CmderUi.py
+pyuic5 BaseUi.ui -o BaseUi.py

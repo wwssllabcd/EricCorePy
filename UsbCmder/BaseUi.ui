@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>828</width>
+    <width>908</width>
     <height>741</height>
    </rect>
   </property>
@@ -76,13 +76,16 @@
      <pointsize>10</pointsize>
     </font>
    </property>
+   <property name="maxVisibleItems">
+    <number>30</number>
+   </property>
   </widget>
   <widget class="QTextEdit" name="txtMainMsg">
    <property name="geometry">
     <rect>
      <x>7</x>
      <y>180</y>
-     <width>451</width>
+     <width>461</width>
      <height>541</height>
     </rect>
    </property>
@@ -102,8 +105,8 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>7</x>
-     <y>120</y>
+     <x>10</x>
+     <y>130</y>
      <width>381</width>
      <height>26</height>
     </rect>
@@ -148,6 +151,18 @@
     <item>
      <widget class="QLineEdit" name="txtCdb_11"/>
     </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_12"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_13"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_14"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="txtCdb_15"/>
+    </item>
    </layout>
   </widget>
   <widget class="QWidget" name="layoutWidget">
@@ -164,16 +179,16 @@
      <widget class="QComboBox" name="cboDriveSel"/>
     </item>
     <item>
-     <widget class="QPushButton" name="btnRefresh">
+     <widget class="QPushButton" name="btnExecute">
       <property name="text">
-       <string>Refresh</string>
+       <string>Execute</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btnExecute">
+     <widget class="QPushButton" name="btnRefresh">
       <property name="text">
-       <string>Execute</string>
+       <string>Refresh</string>
       </property>
      </widget>
     </item>
@@ -201,11 +216,17 @@
   <widget class="QTextEdit" name="txtAscii">
    <property name="geometry">
     <rect>
-     <x>470</x>
+     <x>480</x>
      <y>180</y>
-     <width>341</width>
+     <width>411</width>
      <height>541</height>
     </rect>
+   </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAsNeeded</enum>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAsNeeded</enum>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -219,6 +240,19 @@
    </property>
    <property name="text">
     <string>CmdSel</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>110</y>
+     <width>381</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F</string>
    </property>
   </widget>
  </widget>
