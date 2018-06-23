@@ -1,6 +1,6 @@
 
 
-from EricCore.DriveCtrl.ScsiCmd.UfiCmd import *
+from .UfiCmd import *
 
 
 class ScsiCmdUtility:
