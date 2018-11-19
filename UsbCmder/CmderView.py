@@ -1,7 +1,7 @@
 
-from ..DriveCtrl.ScsiCmd.ScsiCmdUtility import *
-from ..Utility.EricUtility import EricUtility
-from ..Utility.QtUtility import QtUtility
+from EricCore.DriveCtrl.ScsiCmd.ScsiCmdUtility import *
+from EricCore.Utility.EricUtility import EricUtility
+from EricCore.Utility.QtUtility import QtUtility
 
 
 class CmderView():

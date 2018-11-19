@@ -1,10 +1,10 @@
-from ..DriveCtrl.ScsiCmd.ScsiCmdUtility import ScsiCmdUtility
-from ..DriveCtrl.DriverCtrl import DriverCtrl
-from ..Utility.EricUtility import EricUtility
-from ..Utility.QtUtility import QtUtility
+from EricCore.DriveCtrl.ScsiCmd.ScsiCmdUtility import ScsiCmdUtility
+from EricCore.DriveCtrl.DriverCtrl import DriverCtrl
+from EricCore.Utility.EricUtility import EricUtility
+from EricCore.Utility.QtUtility import QtUtility
 
-from ..UsbCmder.CmderView import CmderView
-from ..UsbCmder.KeyPassCtrl import KeyPassCtrl
+from EricCore.UsbCmder.CmderView import CmderView
+from EricCore.UsbCmder.KeyPassCtrl import KeyPassCtrl
 
 class CmderCtrller:
     def __init__(self, view):

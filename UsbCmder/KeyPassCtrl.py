@@ -1,4 +1,4 @@
-from ..Utility.EricUtility import EricUtility
+from EricCore.Utility.EricUtility import EricUtility
 
 
 class KeyPassCtrl:
