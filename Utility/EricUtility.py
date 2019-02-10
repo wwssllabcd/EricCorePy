@@ -68,3 +68,11 @@ class EricUtility:
         value += bufList[offset+2] << 8
         value += bufList[offset+3]
         return value
+
+    def crlf(self):
+        return "\r\n"
+
+
+
+
+        
