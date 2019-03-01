@@ -1,7 +1,6 @@
 import sys
 import ctypes
 
-
 class EricUtility:
     def make_table_crlf(self, cnt):
         res = ""
@@ -72,6 +71,15 @@ class EricUtility:
     def crlf(self):
         return "\r\n"
 
+    def replace_one_char(self, str, idx, c):
+        strList = list(str)
+        strList[idx] = c
+        return "".join(strList)
+        
+    def insert_one_char(self, str, idx, c):
+        if idx >=0:
+            return str[:idx] + c + str[idx:]    
+        return ""
 
 
 
