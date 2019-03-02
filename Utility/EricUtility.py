@@ -1,5 +1,10 @@
 import sys
 import ctypes
+from os import listdir
+from os.path import isfile, join
+from os import walk
+from pathlib import Path
+
 
 class EricUtility:
     def make_table_crlf(self, cnt):
@@ -42,6 +47,15 @@ class EricUtility:
         with open(path, 'w', -1, 'utf-8') as f:
             f.write(data)
 
+    def get_file_data(self, path):
+        file = Path(path)
+        if file.exists() == False:
+            return ""
+        if file.is_dir():
+            return ""
+        data = file.read_text()
+        return data
+
     def to_hex_string(self, value):
         return format(value, '02X')
 
@@ -81,6 +95,11 @@ class EricUtility:
             return str[:idx] + c + str[idx:]    
         return ""
 
+    def get_file_colls(self, folderPath):
+        onlyfiles = [f for f in listdir(folderPath) if isfile(join(folderPath, f))]
+        return onlyfiles
+            
 
+        
 
         
