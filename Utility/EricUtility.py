@@ -53,7 +53,7 @@ class EricUtility:
             return ""
         if file.is_dir():
             return ""
-        data = file.read_text()
+        data = file.read_text(encoding = 'utf8')
         return data
 
     def to_hex_string(self, value):
