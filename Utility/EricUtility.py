@@ -47,9 +47,13 @@ class EricUtility:
         with open(path, 'w', -1, 'utf-8') as f:
             f.write(data)
 
+    def is_file_exist(self, path):
+        file = Path(path)
+        return file.exists()
+
     def get_file_data(self, path):
         file = Path(path)
-        if file.exists() == False:
+        if self.is_file_exist(path) == False:
             return ""
         if file.is_dir():
             return ""
@@ -90,9 +94,9 @@ class EricUtility:
         strList[idx] = c
         return "".join(strList)
         
-    def insert_one_char(self, str, idx, c):
-        if idx >=0:
-            return str[:idx] + c + str[idx:]    
+    def insert_one_char(self, str, targetIdx, c):
+        if targetIdx >=0:
+            return str[:targetIdx] + c + str[targetIdx:]    
         return ""
 
     def get_file_colls(self, folderPath):
