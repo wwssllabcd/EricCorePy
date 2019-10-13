@@ -51,6 +51,11 @@ class EricUtility:
         file = Path(path)
         return file.exists()
 
+    def make_folder(self, path):
+        file = Path(path)
+        if file.is_dir() == False:
+            file.mkdir(parents=True, exist_ok=True)
+
     def get_file_data(self, path):
         file = Path(path)
         if self.is_file_exist(path) == False:
