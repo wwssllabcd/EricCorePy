@@ -65,6 +65,10 @@ class EricUtility:
         data = file.read_text(encoding = 'utf8')
         return data
 
+    def get_file_size(self, path):
+        p = Path(path)
+        return p.stat().st_size
+
     def to_hex_string(self, value):
         return format(value, '02X')
 
