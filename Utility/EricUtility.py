@@ -5,6 +5,11 @@ from os.path import isfile, join
 from os import walk
 from pathlib import Path
 
+class FileObj:
+    def __init__(self):
+        self.name = ""
+        self.size = 0
+        self.isFile = True
 
 class EricUtility:
     def make_table_crlf(self, cnt):
@@ -43,31 +48,6 @@ class EricUtility:
                 str1 += "\r\n"
         return str1
 
-    def to_file(self, path, data):
-        with open(path, 'w', -1, 'utf-8') as f:
-            f.write(data)
-
-    def is_file_exist(self, path):
-        file = Path(path)
-        return file.exists()
-
-    def make_folder(self, path):
-        file = Path(path)
-        if file.is_dir() == False:
-            file.mkdir(parents=True, exist_ok=True)
-
-    def get_file_data(self, path):
-        file = Path(path)
-        if self.is_file_exist(path) == False:
-            return ""
-        if file.is_dir():
-            return ""
-        data = file.read_text(encoding = 'utf8')
-        return data
-
-    def get_file_size(self, path):
-        p = Path(path)
-        return p.stat().st_size
 
     def to_hex_string(self, value):
         return format(value, '02X')
@@ -108,11 +88,46 @@ class EricUtility:
             return str[:targetIdx] + c + str[targetIdx:]    
         return ""
 
+    def to_file(self, path, data):
+        with open(path, 'w', -1, 'utf-8') as f:
+            f.write(data)
+
+    def is_file_exist(self, path):
+        file = Path(path)
+        return file.exists()
+
+    def make_folder(self, path):
+        file = Path(path)
+        if file.is_dir() == False:
+            file.mkdir(parents=True, exist_ok=True)
+
+    def get_file_data(self, path):
+        file = Path(path)
+        if self.is_file_exist(path) == False:
+            return ""
+        if file.is_dir():
+            return ""
+        data = file.read_text(encoding = 'utf8')
+        return data
+
+    def get_file_size(self, path):
+        p = Path(path)
+        return p.stat().st_size
+
     def get_file_colls(self, folderPath):
         onlyfiles = [f for f in listdir(folderPath) if isfile(join(folderPath, f))]
         return onlyfiles
-            
 
-        
+    def get_fileObj_colls(self, folderPath):
+        fColls = []
+        files = listdir(folderPath)
 
+        for f in files:
+            fullpath = join(folderPath, f)
+            fo = FileObj()
+            fo.name = f
+            fo.isFile = isfile(fullpath)
+            fo.size = self.get_file_size(fullpath)
+            fColls.append(fo)
+        return fColls
         
