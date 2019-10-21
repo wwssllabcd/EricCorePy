@@ -1,5 +1,6 @@
 import sys
 import ctypes
+import shutil  # file move
 from os import listdir
 from os.path import isfile, join
 from os import walk
@@ -130,4 +131,6 @@ class EricUtility:
             fo.size = self.get_file_size(fullpath)
             fColls.append(fo)
         return fColls
-        
+
+    def move_file(self, src, dsc):
+        shutil.move(src, dsc)
