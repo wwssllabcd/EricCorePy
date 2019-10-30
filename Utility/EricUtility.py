@@ -134,3 +134,33 @@ class EricUtility:
 
     def move_file(self, src, dsc):
         shutil.move(src, dsc)
+
+    def get_file_data_binary(self, filePath):
+        f = open(filePath, "rb") # b is important -> binary
+        return f.read()
+        
+
+    def get_duplicate_file_list(self, folderPath):
+        fileColls = self.get_fileObj_colls(folderPath)
+        fileColls.sort(key=lambda x: x.size)
+        dupFileColls = {}
+        for file in fileColls:
+            if file.size not in dupFileColls:
+                dupFileColls[file.size] = []
+            dupFileColls[file.size].append(file.name)
+
+        dupFileList = []
+        for item in dupFileColls:
+            fileList = dupFileColls[item]
+            if len(fileList) > 1:
+                cnt=0
+                firstData = ''
+                for f in fileList:
+                    if cnt == 0:
+                        firstData = self.get_file_data_binary(folderPath + f)
+                        cnt+=1
+                    else:
+                        data = self.get_file_data_binary(folderPath + f)
+                        if data == firstData:
+                            dupFileList.append(f)
+        return dupFileList
