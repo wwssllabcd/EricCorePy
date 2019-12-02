@@ -136,8 +136,10 @@ class EricUtility:
         shutil.move(src, dsc)
 
     def get_file_data_binary(self, filePath):
-        f = open(filePath, "rb") # b is important -> binary
-        return f.read()
+        f = open(filePath, "rb") # b is important -> binary, return class 'bytes'
+    	if len == 0:
+        	return f.read()
+    	return f.read(len)
         
 
     def get_duplicate_file_list(self, folderPath):
