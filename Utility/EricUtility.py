@@ -137,20 +137,22 @@ class EricUtility:
 
     def get_file_data_binary(self, filePath):
         f = open(filePath, "rb") # b is important -> binary, return class 'bytes'
-    	if len == 0:
+        if len == 0:
         	return f.read()
-    	return f.read(len)
+        return f.read(len)
         
-
-    def get_duplicate_file_list(self, folderPath):
-        fileColls = self.get_fileObj_colls(folderPath)
-        fileColls.sort(key=lambda x: x.size)
+    def get_file_list_by_size(self, fileColls):
         dupFileColls = {}
         for file in fileColls:
             if file.size not in dupFileColls:
                 dupFileColls[file.size] = []
             dupFileColls[file.size].append(file.name)
+        return dupFileColls
 
+    def get_duplicate_file_list(self, folderPath):
+        fileColls = self.get_fileObj_colls(folderPath)
+        fileColls.sort(key=lambda x: x.size)
+        dupFileColls = self.get_file_list_by_size(fileColls)
         dupFileList = []
         for item in dupFileColls:
             fileList = dupFileColls[item]
