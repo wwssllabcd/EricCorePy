@@ -1,27 +1,32 @@
 import sqlite3
 
 class SqliteUtility:
-    def __init__(self):
+    def clear_connect(self):
+        if self.m_conn != None:
+            self.m_conn.close()
         self.m_conn = None
         self.path = None
 
-    def check_conn_null(self):
-        if self.m_conn == None:
-            raise Exception('m_conn==None')
+    def __init__(self):
+        self.m_conn = None
+        self.clear_connect()
 
     def open_database(self, path):
+        if self.m_conn != None:
+            if self.path == path:
+                return self.m_conn
+
         self.m_conn = sqlite3.connect(path) 
         self.path = path
         return self.m_conn
 
     def execute(self, sqlcmd):
-        self.check_conn_null()
-        self.m_conn.cursor.execute(sqlcmd)
+        c = self.m_conn.cursor()
+        c.execute(sqlcmd)
+        return c.fetchone()
 
     def commit(self, sqlcmd):
-        self.check_conn_null()
         self.m_conn.commit()
 
     def close(self):
-        self.check_conn_null()
-        self.m_conn.close()
+        self.clear_connect()
