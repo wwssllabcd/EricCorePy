@@ -23,6 +23,7 @@ class SqliteUtility:
     def execute(self, sqlcmd):
         c = self.m_conn.cursor()
         c.execute(sqlcmd)
+        # type: tuple
         return c.fetchone()
 
     def commit(self, sqlcmd):

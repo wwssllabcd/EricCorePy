@@ -105,9 +105,9 @@ class EricUtility:
     def get_file_data(self, path):
         file = Path(path)
         if self.is_file_exist(path) == False:
-            return ""
+            return None
         if file.is_dir():
-            return ""
+            return None
         data = file.read_text(encoding = 'utf8')
         return data
 
