@@ -26,8 +26,13 @@ class SqliteUtility:
         # type: tuple
         return c.fetchone()
 
-    def commit(self, sqlcmd):
-        self.m_conn.commit()
-
     def close(self):
         self.clear_connect()
+
+    # for example: "INSERT INTO employees VALUES(1, 'John', 700, 'HR', 'Manager', '2017-01-04')"
+    def insert(self, table, value):
+        sql = 'INSERT INTO ' + table + ' VALUES ' + value
+        c = self.m_conn.cursor()
+        c.execute(sql)
+        self.m_conn.commit()
+
