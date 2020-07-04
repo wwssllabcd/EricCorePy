@@ -3,7 +3,10 @@ import re
 
 
 class ReUtility:
-    def re(self, pattern, data):
+    def get_re(self):
+        return re
+
+    def findall(self, pattern, data):
         return re.findall(pattern, data)
     def searchPattern(self, stringData, pattern):
         return re.search(pattern, stringData)
@@ -23,3 +26,11 @@ class ReUtility:
 
         data = data[frontIdx:endIdx]
         return data
+
+    def remove_html_tag(self, data):
+        rule = re.compile(r'<[^>]+>', re.S)
+        res = rule.sub('', data)
+        return res
+
+    
+    
