@@ -36,3 +36,6 @@ class SqliteUtility:
         c.execute(sql)
         self.m_conn.commit()
 
+    def gen_sql_insert_string(self, nameObj):
+        sql =  "('" + nameObj.fullName + "', '" + nameObj.catolog + "', " + str(nameObj.number) + ", '" + nameObj.actor + "')"
+        return sql

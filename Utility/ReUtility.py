@@ -29,8 +29,16 @@ class ReUtility:
 
     def remove_html_tag(self, data):
         rule = re.compile(r'<[^>]+>', re.S)
+        #符合 rule 的替換成''
         res = rule.sub('', data)
         return res
 
-    
+    def get_target_tr(self, htmlData, pattern):
+        trColls = re.split("<tr>", htmlData)
+        for tr in trColls:
+            find = tr.find(pattern)
+            if find != -1:
+                return tr
+        return None
+
     
