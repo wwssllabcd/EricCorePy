@@ -38,7 +38,9 @@ class ReUtility:
         for tr in trColls:
             find = tr.find(pattern)
             if find != -1:
-                return tr
+                find = tr.find("<td>")
+                if find != -1:
+                    return tr
         return None
 
     
