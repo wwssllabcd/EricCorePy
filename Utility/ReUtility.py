@@ -19,11 +19,13 @@ class ReUtility:
         return data
 
     def get_between_string(self, data, targetPattern, startPattern, endPattern):
-        data = data.lower()
         targetIdx = data.find(targetPattern)
         endIdx = data.find(endPattern, targetIdx)
-        frontIdx = data.rfind(startPattern, 0, targetIdx)
 
+        # add len of end pattern for full string
+        endIdx = endIdx + len(endPattern) 
+
+        frontIdx = data.rfind(startPattern, 0, targetIdx)
         data = data[frontIdx:endIdx]
         return data
 
