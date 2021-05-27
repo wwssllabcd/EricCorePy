@@ -151,10 +151,7 @@ class EricUtility:
             dupFileColls[file.size].append(file.name)
         return dupFileColls
 
-    def get_duplicate_file_list_by_compare_file_data(self, folderPath):
-        fileColls = self.get_fileObj_colls(folderPath)
-        fileColls.sort(key=lambda x: x.size)
-        dupFileColls = self.get_file_list_by_size(fileColls)
+    def get_duplicate_file_by_compare_file_data(self, folderPath, dupFileColls):
         dupFileList = []
         compareSize = 512*1024
         for item in dupFileColls:
@@ -170,4 +167,11 @@ class EricUtility:
                         data = self.get_file_data_binary(folderPath + f, compareSize)
                         if data == firstData:
                             dupFileList.append(f)
+        return dupFileList
+
+    def get_duplicate_file_list_by_compare_file_data(self, folderPath):
+        fileColls = self.get_fileObj_colls(folderPath)
+        fileColls.sort(key=lambda x: x.size)
+        dupFileColls = self.get_file_list_by_size(fileColls)
+        dupFileList = self.get_duplicate_file_by_compare_file_data(folderPath, dupFileColls)
         return dupFileList
