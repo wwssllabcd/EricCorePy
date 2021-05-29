@@ -13,14 +13,18 @@ class NetUtility:
         return sk
 
     def receive_data_to_file(self, fileName, fileSize, conn):
+        orgSize = fileSize
         with open(fileName, mode='wb') as f:
             while fileSize > 0:
-                content = conn.recv(1024)
-                fileSize -= len(content)
-                f.write(content)
+                buffer = conn.recv(1024)
+                if not buffer:
+                    print(f'can not receive data, fileSize={orgSize}, receiveCnt={orgSize - fileSize}')
+                    return
+
+                fileSize -= len(buffer)
+                f.write(buffer)
+
     def send_file(self, filePath, fileSize, conn):
         with open(filePath, mode='rb') as f:
-            while fileSize > 0:
-                content = f.read(1024)
-                fileSize -= len(content)
-                conn.send(content)
+            if fileSize > 0:
+                conn.sendall(f.read())
