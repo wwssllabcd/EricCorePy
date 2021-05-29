@@ -132,6 +132,22 @@ class EricUtility:
             fColls.append(fo)
         return fColls
 
+    def get_obj_in_folder(self, folderPath):
+        fColls = []
+        files = listdir(folderPath)
+        for f in files:
+            fileData = []
+
+            fullpath = join(folderPath, f)
+
+            fileData.append(f)
+            fileData.append(self.get_file_size(fullpath))
+            fileData.append(isfile(fullpath))
+            
+            fColls.append(fileData)
+        return fColls
+
+
     def move_file(self, src, dsc):
         shutil.move(src, dsc)
 
