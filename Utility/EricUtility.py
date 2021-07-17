@@ -97,16 +97,20 @@ class EricUtility:
         file = Path(path)
         return file.exists()
 
+    def is_dir(self, path):
+        file = Path(path)
+        return file.is_dir()
+
     def make_folder(self, path):
         file = Path(path)
-        if file.is_dir() == False:
+        if self.is_dir(path) == False:
             file.mkdir(parents=True, exist_ok=True)
 
     def get_file_data(self, path):
         file = Path(path)
         if self.is_file_exist(path) == False:
             return None
-        if file.is_dir():
+        if self.is_dir(path):
             return None
         data = file.read_text(encoding = 'utf8')
         return data
@@ -157,37 +161,13 @@ class EricUtility:
         	return f.read()
         return f.read(len)
         
-    def get_file_list_by_size(self, fileColls):
-        dupFileColls = {}
+    def group_file_by_size(self, fileColls):
+        fileDirGroupBySize = {}
         for file in fileColls:
-            if file.size not in dupFileColls:
-                if file.size ==  0:
-                    continue
-                dupFileColls[file.size] = []
-            dupFileColls[file.size].append(file.name)
-        return dupFileColls
-
-    def get_duplicate_file_by_compare_file_data(self, folderPath, dupFileColls):
-        dupFileList = []
-        compareSize = 512*1024
-        for item in dupFileColls:
-            fileList = dupFileColls[item]
-            if len(fileList) > 1:
-                cnt=0
-                firstData = ''
-                for f in fileList:
-                    if cnt == 0:
-                        firstData = self.get_file_data_binary(folderPath + f, compareSize)
-                        cnt+=1
-                    else:
-                        data = self.get_file_data_binary(folderPath + f, compareSize)
-                        if data == firstData:
-                            dupFileList.append(f)
-        return dupFileList
-
-    def get_duplicate_file_list_by_compare_file_data(self, folderPath):
-        fileColls = self.get_fileObj_colls(folderPath)
-        fileColls.sort(key=lambda x: x.size)
-        dupFileColls = self.get_file_list_by_size(fileColls)
-        dupFileList = self.get_duplicate_file_by_compare_file_data(folderPath, dupFileColls)
-        return dupFileList
+            if file.size ==  0:
+                continue
+            if file.size not in fileDirGroupBySize:
+                fileDirGroupBySize[file.size] = []
+            
+            fileDirGroupBySize[file.size].append(file.name)
+        return fileDirGroupBySize
