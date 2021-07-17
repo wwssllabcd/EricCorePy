@@ -6,11 +6,7 @@ from os.path import isfile, join
 from os import walk
 from pathlib import Path
 
-class FileObj:
-    def __init__(self):
-        self.name = ""
-        self.size = 0
-        self.isFile = True
+
 
 class EricUtility:
     def make_table_crlf(self, cnt):
@@ -122,19 +118,6 @@ class EricUtility:
     def get_file_colls(self, folderPath):
         onlyfiles = [f for f in listdir(folderPath) if isfile(join(folderPath, f))]
         return onlyfiles
-
-    def get_fileObj_colls(self, folderPath):
-        fColls = []
-        files = listdir(folderPath)
-
-        for f in files:
-            fullpath = join(folderPath, f)
-            fo = FileObj()
-            fo.name = f
-            fo.isFile = isfile(fullpath)
-            fo.size = self.get_file_size(fullpath)
-            fColls.append(fo)
-        return fColls
 
     def get_obj_in_folder(self, folderPath):
         fColls = []
