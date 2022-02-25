@@ -6,7 +6,11 @@ from os.path import isfile, join
 from os import walk
 from pathlib import Path
 
-
+class FileObj:
+    def __init__(self):
+        self.name = ""
+        self.size = 0
+        self.isFile = True
 
 class EricUtility:
     def make_table_crlf(self, cnt):
@@ -93,20 +97,16 @@ class EricUtility:
         file = Path(path)
         return file.exists()
 
-    def is_dir(self, path):
-        file = Path(path)
-        return file.is_dir()
-
     def make_folder(self, path):
         file = Path(path)
-        if self.is_dir(path) == False:
+        if file.is_dir() == False:
             file.mkdir(parents=True, exist_ok=True)
 
     def get_file_data(self, path):
         file = Path(path)
         if self.is_file_exist(path) == False:
             return None
-        if self.is_dir(path):
+        if file.is_dir():
             return None
         data = file.read_text(encoding = 'utf8')
         return data
@@ -119,21 +119,18 @@ class EricUtility:
         onlyfiles = [f for f in listdir(folderPath) if isfile(join(folderPath, f))]
         return onlyfiles
 
-    def get_obj_in_folder(self, folderPath):
+    def get_fileObj_colls(self, folderPath):
         fColls = []
         files = listdir(folderPath)
+
         for f in files:
-            fileData = []
-
             fullpath = join(folderPath, f)
-
-            fileData.append(f)
-            fileData.append(self.get_file_size(fullpath))
-            fileData.append(isfile(fullpath))
-            
-            fColls.append(fileData)
+            fo = FileObj()
+            fo.name = f
+            fo.isFile = isfile(fullpath)
+            fo.size = self.get_file_size(fullpath)
+            fColls.append(fo)
         return fColls
-
 
     def move_file(self, src, dsc):
         shutil.move(src, dsc)
@@ -144,13 +141,33 @@ class EricUtility:
         	return f.read()
         return f.read(len)
         
-    def group_file_by_size(self, fileColls):
-        fileDirGroupBySize = {}
+    def get_file_list_by_size(self, fileColls):
+        dupFileColls = {}
         for file in fileColls:
-            if file.size ==  0:
-                continue
-            if file.size not in fileDirGroupBySize:
-                fileDirGroupBySize[file.size] = []
-            
-            fileDirGroupBySize[file.size].append(file.name)
-        return fileDirGroupBySize
+            if file.size not in dupFileColls:
+                if file.size ==  0:
+                    continue
+                dupFileColls[file.size] = []
+            dupFileColls[file.size].append(file.name)
+        return dupFileColls
+
+    def get_duplicate_file_list_by_compare_file_data(self, folderPath):
+        fileColls = self.get_fileObj_colls(folderPath)
+        fileColls.sort(key=lambda x: x.size)
+        dupFileColls = self.get_file_list_by_size(fileColls)
+        dupFileList = []
+        compareSize = 512*1024
+        for item in dupFileColls:
+            fileList = dupFileColls[item]
+            if len(fileList) > 1:
+                cnt=0
+                firstData = ''
+                for f in fileList:
+                    if cnt == 0:
+                        firstData = self.get_file_data_binary(folderPath + f, compareSize)
+                        cnt+=1
+                    else:
+                        data = self.get_file_data_binary(folderPath + f, compareSize)
+                        if data == firstData:
+                            dupFileList.append(f)
+        return dupFileList
