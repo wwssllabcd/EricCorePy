@@ -28,7 +28,7 @@ class EricUtility:
             res += format(cnt, '04X') + "| "
         return res
 
-    def make_hex_table(self, dataList):
+    def make_hex_table(self, dataList, maxCnt=0):
         str1 = ""
         cnt = 0
         for d in dataList:
@@ -37,9 +37,11 @@ class EricUtility:
 
             str1 += format(d, '02X') + " "
             cnt += 1
+            if(cnt == maxCnt):
+                break
         return str1
 
-    def make_ascii_table(self, dataList):
+    def make_ascii_table(self, dataList, maxCnt=0):
         str1 = ""
         cnt = 0
         for d in dataList:
@@ -47,6 +49,9 @@ class EricUtility:
             cnt += 1
             if (cnt % 0x10) == 0:
                 str1 += "\r\n"
+
+            if(cnt == maxCnt):
+                break
         return str1
 
 
