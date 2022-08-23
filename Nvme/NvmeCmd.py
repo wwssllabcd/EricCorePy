@@ -15,6 +15,9 @@ NVME_RP_ZONE_ZRA_EXT_RPZ = 1
 NVME_IO_CMD_WRITE = 1
 NVME_IO_CMD_READ = 2
 
+NVME_OPC_ZONE_MGMT_SEND = 0x79
+NVME_OPC_ZONE_MGMT_RECV = 0x7A
+
 BYTE_PER_SECTOIR = 512
 
 class NvmePtCmd(ctypes.Structure):
@@ -76,7 +79,7 @@ class NvmeCmd():
         
 
 # ----------- not class --------
-def nvme_cmd_id_ns():
+def nvme_cmd_id_ctrlr():
     cmd = NvmeCmd()
     cmd.opcode = 0x06
     cmd.dataLen = 0x1000
@@ -84,9 +87,18 @@ def nvme_cmd_id_ns():
     cmd.nsid = 0 # NSID fixed 0
     return cmd
 
+def nvme_cmd_id_ns():
+    cmd = NvmeCmd()
+    cmd.opcode = 0x06
+    cmd.dataLen = 0x1000
+    cmd.cdw10 = 0x00
+    cmd.nsid = 1 #  namespace 1
+    return cmd
+
+
 def nvme_cmd_report_zone(nsid, slba, dataLen, zra, zrasf, isPartial):
     cmd = NvmeCmd()
-    cmd.opcode = 0x7A
+    cmd.opcode = NVME_OPC_ZONE_MGMT_RECV
     cmd.nsid = nsid
     cmd.dataLen = dataLen
     cmd.cdw10 = slba & 0xffffffff
@@ -120,4 +132,12 @@ def nvme_cmd_lba_write(nsid, slba, secCnt):
     cmd.cdw12 = secCnt
     return cmd
 
-    
+def nvme_cmd_reset_zone(nsid, slba, zoneSetAction, selectionAll):
+    cmd = NvmeCmd()
+    cmd.opcode = NVME_OPC_ZONE_MGMT_SEND
+    cmd.nsid = nsid
+    cmd.cdw10 = slba & 0xffffffff
+    cmd.cdw11 = slba >> 32
+    cmd.cdw13 = zoneSetAction | selectionAll << 8
+    cmd.isAdminCmd = False
+    return cmd

@@ -121,8 +121,8 @@ class EricUtility:
         return p.stat().st_size
 
     def get_file_colls(self, folderPath):
-        onlyfiles = [f for f in listdir(folderPath) if isfile(join(folderPath, f))]
-        return onlyfiles
+        onlyFiles = [f for f in listdir(folderPath) if isfile(join(folderPath, f))]
+        return onlyFiles
 
     def get_fileObj_colls(self, folderPath):
         fColls = []
