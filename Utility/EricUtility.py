@@ -102,6 +102,10 @@ class EricUtility:
         file = Path(path)
         return file.exists()
 
+    def is_dir(self, path):
+        file = Path(path)
+        return file.is_dir()
+
     def make_folder(self, path):
         file = Path(path)
         if file.is_dir() == False:
