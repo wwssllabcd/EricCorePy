@@ -6,6 +6,8 @@ from os.path import isfile, join
 from os import walk
 from pathlib import Path
 
+CRLF = "\r\n"
+
 class FileObj:
     def __init__(self):
         self.name = ""
@@ -17,9 +19,9 @@ class EricUtility:
         res = ""
         if cnt != 0:
             if (cnt % 0x10) == 0:
-                res += "\r\n"
+                res += CRLF
             if (cnt % 0x200) == 0:
-                res += "\r\n"
+                res += CRLF
         return res
 
     def make_table_header(self, cnt):
@@ -48,7 +50,7 @@ class EricUtility:
             str1 += chr(d)
             cnt += 1
             if (cnt % 0x10) == 0:
-                str1 += "\r\n"
+                str1 += CRLF
 
             if(cnt == maxCnt):
                 break
@@ -61,12 +63,31 @@ class EricUtility:
     def hex_string_to_int(self, value):
         return int(value, 16)
 
+    def to_int(self, str):
+        if str[0:2] == "0x":
+            return int(str, 16)
+        return int(str)
+
     def is_admin_in_windows(self):
         try:
             return ctypes.windll.shell32.IsUserAnAdmin()
         except:
             return False
 
+    def set_array_value_le(self, bufList, offset, value):
+        bufList[offset+3] = (value >> 0x18) & 0xFF
+        bufList[offset+2] = (value >> 0x10) & 0xFF
+        bufList[offset+1] = (value >> 0x08) & 0xFF
+        bufList[offset+0] = (value >> 0x00) & 0xFF
+        return bufList
+    
+    def get_array_value_le(self, bufList, offset):
+        value = bufList[offset+3] << 24
+        value += bufList[offset+2] << 16
+        value += bufList[offset+1] << 8
+        value += bufList[offset+0]
+        return value
+    
     def set_array_value_be(self, bufList, offset, value):
         bufList[offset+0] = (value >> 0x18) & 0xFF
         bufList[offset+1] = (value >> 0x10) & 0xFF
@@ -82,7 +103,7 @@ class EricUtility:
         return value
 
     def crlf(self):
-        return "\r\n"
+        return CRLF
 
     def replace_one_char(self, str, idx, c):
         strList = list(str)
@@ -180,3 +201,20 @@ class EricUtility:
                         if data == firstData:
                             dupFileList.append(f)
         return dupFileList
+    
+    def fill_buffer(self, value, u32Cnt):
+        buf = [value] * u32Cnt
+        writeBuf = (ctypes.c_uint32 * u32Cnt)(*buf)
+        return writeBuf
+        
+    def fill_buffer_4b(self, value, buffer, offset, length):
+        for i in range(0, length, 4):
+            self.set_array_value_le(buffer, offset + i, value)
+
+        return buffer
+    
+
+    def compare_buffer(self, buffer1, buffer2):
+        if buffer1!=buffer2:
+            return False
+        return True
