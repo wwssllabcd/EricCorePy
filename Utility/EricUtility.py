@@ -5,8 +5,38 @@ from os import listdir
 from os.path import isfile, join
 from os import walk
 from pathlib import Path
+from datetime import datetime
+import logging
+from logging.handlers import RotatingFileHandler
 
 CRLF = "\r\n"
+NULL_32 = 0xFFFFFFFF
+
+
+m_logger = None
+
+def eprint(*args, **kwargs):
+    print(*args, **kwargs)
+    if m_logger != None:
+        m_logger.debug(*args, **kwargs)
+
+def init_logger(fileName):
+    u = EricUtility()
+    u.make_folder("./log")
+    fileName = "log/log-" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".log"
+
+    global m_logger
+    m_logger = logging.getLogger("mylog")
+    m_logger.setLevel(logging.DEBUG)
+
+    handler = RotatingFileHandler(fileName, maxBytes=10*1024*1024, backupCount=10000)
+    handler.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter('[%(asctime)s] %(message)s')
+    handler.setFormatter(formatter)
+    m_logger.addHandler(handler)
+
+
 
 class FileObj:
     def __init__(self):
@@ -63,15 +93,15 @@ class EricUtility:
     def hex_string_to_int(self, value):
         return int(value, 16)
 
-    def to_int(self, str):
-        if str[0:2] == "0x":
-            return int(str, 16)
-        return int(str)
+    def to_int(self, string):
+        if string[:2] == "0x":
+            return int(string, 16)
+        return int(string)
 
     def is_admin_in_windows(self):
         try:
             return ctypes.windll.shell32.IsUserAnAdmin()
-        except:
+        except Exception as e:
             return False
 
     def set_array_value_le(self, bufList, offset, value):
@@ -165,11 +195,11 @@ class EricUtility:
     def move_file(self, src, dsc):
         shutil.move(src, dsc)
 
-    def get_file_data_binary(self, filePath, len=0):
-        f = open(filePath, "rb") # b is important -> binary, return class 'bytes'
-        if len == 0:
-        	return f.read()
-        return f.read(len)
+    def get_file_data_binary(self, filePath, length=0):
+        with open(filePath, "rb") as f:
+            if length == 0:
+                return f.read()
+            return f.read(length)
         
     def get_file_list_by_size(self, fileColls):
         dupFileColls = {}
@@ -213,8 +243,10 @@ class EricUtility:
 
         return buffer
     
-
     def compare_buffer(self, buffer1, buffer2):
-        if buffer1!=buffer2:
-            return False
-        return True
+        return buffer1 == buffer2
+    
+    def get_time_now(self):
+        curTime = datetime.now()
+        return curTime.strftime("%Y-%m-%d %H:%M:%S")
+

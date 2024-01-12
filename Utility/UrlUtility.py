@@ -14,7 +14,7 @@ class UrlUtility:
 
         # check is redirect or not?
         if response.url != url:
-            return self.get_url_data_2(response.url, cookies)
+            return self.get_url_data(response.url, cookies)
 
 
         encoding = response.headers.get_content_charset() 

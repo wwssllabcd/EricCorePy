@@ -1,13 +1,6 @@
 
 from EricCorePy.Utility.EricUtility import *
 
-class LbaFailException(Exception):
-    def __init__(self, desc, lba, secCnt):
-        super().__init__(desc)
-        self.lba = lba
-        self.secCnt = secCnt
-
-
 
 class WriteReadCmpUtility:
     def __init__(self, lba_write, lba_read):
@@ -16,27 +9,57 @@ class WriteReadCmpUtility:
         self.write_record = None
 
     def lba_write(self, lba, secCnt, writeBuf):
-        self._lba_write(lba, secCnt, writeBuf)
-        if self.write_record != None:
-            self.write_record(lba, secCnt)
+            
+        try:
+            self._lba_write(lba, secCnt, writeBuf)
+            if self.write_record != None:
+                self.write_record(lba, secCnt)
+        except InterruptedError as ie:
+            #for spor test 
+            eprint(f"InterruptedError: {ie}")
+            eprint(f"errno=" + str(ie.errno))
 
-    def write_read_cmp(self, lba, secCnt, writeBuf, isNoRead):
+            if ie.errno == 4:
+                lbaEx = LbaFailException("Lba write fail", lba, secCnt)
+                lbaEx.exMsg = str(ie)
+                raise lbaEx
+
+            raise ie
+         
+    def compare_two_buffer(self, lba, secCnt, writeBuf, readBuf):
         u = EricUtility()
-        print("write lba = " + hex(lba) + ", sec = " + hex(secCnt) + CRLF)
-        self.lba_write(lba, secCnt, writeBuf)
+        res = u.compare_buffer(writeBuf, readBuf)
+        if res == False:
+            eprint("compare fail, lba = " + hex(lba) + ", secCnt = " + hex(secCnt))
+            eprint("writeBuf len = " + hex(len(writeBuf)))
+            eprint("readBuf len = " + hex(len(readBuf)))
 
-        if lba == 0x2000:
-            raise LbaFailException("cmp fail", lba, secCnt)
+            msg = "fail Write Lba = " + hex(lba) + ", secCnt = " + hex(secCnt) + CRLF + u.make_hex_table(writeBuf)
+            u.to_file("failWriteBuf.txt", msg)
+
+            msg = "fail Read Lba = " + hex(lba) + ", secCnt = " + hex(secCnt) + CRLF + u.make_hex_table(readBuf)
+            u.to_file("failReadBuf.txt", msg)
+        
+            raise Exception("compare_two_buffer fail")
+            
+
+    def write_read_cmp(self, lba, secCnt, writeBuf, isNoRead, curCnt=None):
+        u = EricUtility()
+
+        if curCnt !=None:
+            msg = "(" + hex(curCnt) + ")"
+
+        eprint(msg + "write lba = " + hex(lba) + ", sec = " + hex(secCnt))
+        self.lba_write(lba, secCnt, writeBuf)
 
         if isNoRead:
             return 
 
-        print("read  lba = " + hex(lba) + ", sec = " + hex(secCnt) + CRLF)
+        eprint(msg + "read  lba = " + hex(lba) + ", sec = " + hex(secCnt))
         readBuf = self.lba_read(lba, secCnt)
         res = u.compare_buffer(writeBuf, readBuf)
         if res == False:
-            print("compare fail, lba = " + hex(lba) +", secCnt=" + hex(secCnt))
-            raise LbaFailException("cmp fail", lba, secCnt)
+            self.compare_two_buffer(lba, secCnt, writeBuf, readBuf)
         return readBuf
 
 
