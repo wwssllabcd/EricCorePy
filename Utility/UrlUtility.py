@@ -10,7 +10,13 @@ class UrlUtility:
         if cookies != None:
             req.add_header('Cookie', cookies)
 
-        response = urllib.request.urlopen(req)
+        try:
+            response = urllib.request.urlopen(req)
+        except urllib.error.HTTPError as e:
+            print(e)
+            print(url)
+            return None
+
 
         # check is redirect or not?
         if response.url != url:
