@@ -1,5 +1,9 @@
 import threading
 
+# ex: 
+# thread = MyThread( func, (param1, param2))
+# thread.run()
+
 class MyThread(threading.Thread):
     def __init__(self, func, args=()):
         super(MyThread,self).__init__()

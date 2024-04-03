@@ -248,5 +248,5 @@ class EricUtility:
     
     def get_time_now(self):
         curTime = datetime.now()
-        return curTime.strftime("%Y-%m-%d %H:%M:%S")
+        return curTime.strftime("%Y-%m-%d_%H-%M-%S")
 
