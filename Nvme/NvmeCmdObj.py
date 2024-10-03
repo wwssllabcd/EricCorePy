@@ -74,6 +74,7 @@ class NvmeCmdObj():
         self.cdw14 = 0
         self.cdw15 = 0
         self.isAdminCmd = True
+        self.desc = ""
     
     def to_c_array(self) -> NvmePtCmd:
         return NvmePtCmd(
@@ -108,8 +109,25 @@ class NvmeCmdObj():
 
 
 # ----------- not class --------
+def get_normal_nvme_cmd():
+    cmds = []
+    cmds.append(nvme_cmd_id_ctrler())
+    cmds.append(nvme_cmd_id_ns(0))
+    cmds.append(nvme_cmd_lba_read(0, 0, 1))
+    cmds.append(nvme_cmd_lba_write(0, 0, 1))
+    return cmds
+
+def get_zns_nvme_cmd():
+    cmds = []
+    cmds.append(nvme_cmd_id_cns_zns(0))
+    cmds.append(nvme_cmd_set_zone(0, 0, 0, 0))
+    cmds.append(nvme_cmd_zone_append(0, 0, 1))
+    cmds.append(nvme_cmd_report_zone(0, 0, 0x3F, 0, 0, True)) 
+    return cmds
+
 def nvme_cmd_id_ctrler():
     cmd = NvmeCmdObj()
+    cmd.desc = "Admin: Identify Controller"
     cmd.opcode = NVME_ADMIN_IDENTIFY
     cmd.dataLen = 0x1000
     cmd.cdw10 = NVME_ID_CNS_CTRL
@@ -118,23 +136,16 @@ def nvme_cmd_id_ctrler():
 
 def nvme_cmd_id_ns(nsid):
     cmd = NvmeCmdObj()
+    cmd.desc = "Admin: Identify Nname Space"
     cmd.opcode = NVME_ADMIN_IDENTIFY
     cmd.dataLen = 0x1000
     cmd.cdw10 = NVME_ID_CNS_NS
     cmd.nsid = nsid
     return cmd
 
-
-def nvme_cmd_id_cns_zns(nsid):
-    cmd = NvmeCmdObj()
-    cmd.opcode = NVME_ADMIN_IDENTIFY
-    cmd.dataLen = 0x1000
-    cmd.cdw10 = 0x05
-    cmd.nsid = nsid
-    return cmd
-
 def nvme_cmd_lba_read(nsid, slba, secCnt):
     cmd = NvmeCmdObj()
+    cmd.desc = "IO: Read"
     cmd.isAdminCmd = False
     cmd.opcode = NVME_IO_CMD_READ
     cmd.nsid = nsid
@@ -147,6 +158,7 @@ def nvme_cmd_lba_read(nsid, slba, secCnt):
 
 def nvme_cmd_lba_write(nsid, slba, secCnt):
     cmd = NvmeCmdObj()
+    cmd.desc = "IO: Write"
     cmd.isAdminCmd = False
     cmd.opcode = NVME_IO_CMD_WRITE
     cmd.nsid = nsid
@@ -158,8 +170,19 @@ def nvme_cmd_lba_write(nsid, slba, secCnt):
     return cmd
 
 ##-------- ZNS --------
+def nvme_cmd_id_cns_zns(nsid):
+    cmd = NvmeCmdObj()
+    cmd.desc = "Admin-ZNS: Identify"
+    cmd.opcode = NVME_ADMIN_IDENTIFY
+    cmd.dataLen = 0x1000
+    cmd.cdw10 = 0x05
+    cmd.nsid = nsid
+    return cmd
+
 def nvme_cmd_set_zone(nsid, slba, zoneSetAction, selectionAll):
     cmd = NvmeCmdObj()
+    cmd.desc = "IO-ZNS: Set Zone"
+
     cmd.opcode = NVME_OPC_ZONE_MGMT_SEND
     cmd.nsid = nsid
     cmd.cdw10 = slba & 0xffffffff
@@ -170,6 +193,7 @@ def nvme_cmd_set_zone(nsid, slba, zoneSetAction, selectionAll):
 
 def nvme_cmd_zone_append(nsid, slba, secCnt):
     cmd = NvmeCmdObj()
+    cmd.desc = "IO-ZNS: Append"
     cmd.isAdminCmd = False
     cmd.opcode = NVME_OPC_ZONE_APPEND
     cmd.nsid = nsid
@@ -182,6 +206,8 @@ def nvme_cmd_zone_append(nsid, slba, secCnt):
 
 def nvme_cmd_report_zone(nsid, slba, dataLen, zra, zrasf, isPartial):
     cmd = NvmeCmdObj()
+    cmd.desc = "IO-ZNS: Report Zones"
+
     cmd.opcode = NVME_OPC_ZONE_MGMT_RECV
     cmd.nsid = nsid
     cmd.dataLen = dataLen
