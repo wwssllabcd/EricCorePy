@@ -1,7 +1,10 @@
 import ctypes
 from EricCorePy.Utility.EricUtility import *
 
+#----- Config -----
+BYTE_PER_SECTOR = 512
 NVME_ADMIN_IDENTIFY = 0x06
+NVME_ADMIN_GET_LOG_PAGE = 0x02
 
 # ------ identify CNS -----
 NVME_ID_CNS_NS = 0x00
@@ -27,16 +30,6 @@ NVME_OPC_ZONE_MGMT_SEND = 0x79
 NVME_OPC_ZONE_MGMT_RECV = 0x7A
 NVME_OPC_ZONE_APPEND = 0x7D
 
-
-ENABLE_4k_PER_SECTOR = True
-
-if ENABLE_4k_PER_SECTOR:
-    BYTE_PER_SECTOR = 4096
-else:
-    BYTE_PER_SECTOR = 512
-
-
-
 class NvmePtCmd(ctypes.Structure):
     _fields_ = [
         ('opcode', ctypes.c_ubyte),
@@ -61,12 +54,11 @@ class NvmePtCmd(ctypes.Structure):
 
 class NvmeCmdObj():
     def __init__(self):
-        self.opcode = 0    
-        self.nsid = 0
+        self.opcode = 0 # cdw0
+        self.nsid = 0   # cdw1
         self.cdw2 = 0
         self.cdw3 = 0
         self.dataAddr = 0
-        self.dataLen = 0
         self.cdw10 = 0
         self.cdw11 = 0
         self.cdw12 = 0
@@ -74,6 +66,7 @@ class NvmeCmdObj():
         self.cdw14 = 0
         self.cdw15 = 0
         self.isAdminCmd = True
+        self.dataLen = 0
         self.desc = ""
     
     def to_c_array(self) -> NvmePtCmd:
@@ -95,24 +88,33 @@ class NvmeCmdObj():
         msg = "NvmeCmd" + CRLF
         # msg = ''.join('{:02X}, '.format(x) for x in buf)
         # msg += CRLF
-        msg += "isAdminCmd = " + hex(self.isAdminCmd) + CRLF
         msg += "opcode = " + hex(self.opcode) + CRLF
+        msg += "nsid = " + hex(self.nsid) + CRLF
+        msg += "cdw2 = " + hex(self.cdw2) + CRLF
+        msg += "cdw3 = " + hex(self.cdw3) + CRLF
+        msg += "dataAddr = " + hex(self.dataAddr) + CRLF
         msg += "cdw10 = " + hex(self.cdw10) + CRLF
         msg += "cdw11 = " + hex(self.cdw11) + CRLF
         msg += "cdw12 = " + hex(self.cdw12) + CRLF
         msg += "cdw13 = " + hex(self.cdw13) + CRLF
         msg += "cdw14 = " + hex(self.cdw14) + CRLF
         msg += "cdw15 = " + hex(self.cdw15) + CRLF
-
+        msg += "isAdminCmd = " + hex(self.isAdminCmd) + CRLF
+        msg += "dataLen = " + hex(self.dataLen) + CRLF
+        msg += "desc = " + self.desc + CRLF
         return msg
 
-
+def byte_per_sec():
+    return BYTE_PER_SECTOR
 
 # ----------- not class --------
 def get_normal_nvme_cmd():
     cmds = []
     cmds.append(nvme_cmd_id_ctrler())
     cmds.append(nvme_cmd_id_ns(0))
+    cmds.append(nvme_cmd_get_log_page(0, 0, 1))
+
+    # io cmd
     cmds.append(nvme_cmd_lba_read(0, 0, 1))
     cmds.append(nvme_cmd_lba_write(0, 0, 1))
     return cmds
@@ -136,11 +138,26 @@ def nvme_cmd_id_ctrler():
 
 def nvme_cmd_id_ns(nsid):
     cmd = NvmeCmdObj()
-    cmd.desc = "Admin: Identify Nname Space"
+    cmd.desc = "Admin: Identify Namespace"
     cmd.opcode = NVME_ADMIN_IDENTIFY
     cmd.dataLen = 0x1000
     cmd.cdw10 = NVME_ID_CNS_NS
     cmd.nsid = nsid
+    return cmd
+
+def nvme_cmd_get_log_page(nsid, logId, dwLen):
+    if dwLen == 0:
+        print("dwLen should not be 0", hex(dwLen))
+    
+    cmd = NvmeCmdObj()
+    cmd.desc = "Admin: Get LogPage"
+    cmd.opcode = NVME_ADMIN_GET_LOG_PAGE
+    cmd.nsid = nsid
+    cmd.dataLen = dwLen * 4
+
+    dwNum = dwLen - 1 # start from 0
+    cmd.cdw10 = (logId & 0xFF) + ((dwNum & 0xFFFF) << 16)
+    cmd.cdw11 = (dwNum>>16) & 0xFFFF
     return cmd
 
 def nvme_cmd_lba_read(nsid, slba, secCnt):

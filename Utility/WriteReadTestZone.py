@@ -1,6 +1,6 @@
 import ctypes
 from EricCorePy.Utility.EricUtility import *
-from EricCorePy.Nvme.NvmeCmdObj import BYTE_PER_SECTOR, ENABLE_4k_PER_SECTOR
+from EricCorePy.Nvme.NvmeCmdObj import byte_per_sec
 import random
 from EricCorePy.Nvme.ReportZonesObj import *
 
@@ -24,9 +24,9 @@ class WriteReadTestZone:
         return zoneNum, offset
         
     def gen_write_buffer(self, lba, secCnt):
-        writeBuf = (ctypes.c_uint8 * (secCnt * BYTE_PER_SECTOR))()
+        writeBuf = (ctypes.c_uint8 * (secCnt * byte_per_sec()))()
         u = EricUtility()
-        u.fill_buffer_4b(lba, writeBuf, 0, len(writeBuf))
+        u.fill_buffer_4b(lba, writeBuf)
         return writeBuf
 
     # def zns_sequence_write_test(self, lba, endLba, increase, zoneCap, zoneSize):
@@ -44,7 +44,7 @@ class WriteReadTestZone:
     #         if (offset + secCnt) > zoneCap:
     #             secCnt = zoneCap - offset
 
-    #         u.fill_buffer_4b(lba, writeBuf, 0, len(writeBuf))
+    #         u.fill_buffer_4b(lba, writeBuf, len(writeBuf))
     #         self.wrcu.write_read_cmp(lba, secCnt, writeBuf, False)
 
     #         lba += secCnt
@@ -54,10 +54,10 @@ class WriteReadTestZone:
         u = EricUtility()
 
 		#max xfer len must be less 256k
-        if ENABLE_4k_PER_SECTOR == True:
-            maxSecCnt = 0x3f
-        else:
+        if byte_per_sec() == 512:
             maxSecCnt = 0xFF
+        else:
+            maxSecCnt = 0x3F # 256/4 = 64
         
         curStep = 0
         while lba < endLba:

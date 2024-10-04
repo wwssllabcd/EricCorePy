@@ -1,18 +1,11 @@
 import ctypes
 from EricCorePy.Utility.EricUtility import *
-from EricCorePy.Nvme.NvmeCmdObj import BYTE_PER_SECTOR
+from EricCorePy.Nvme.NvmeCmdObj import byte_per_sec
 import random
 
 class WriteReadTest:
     def __init__(self, wrcu):
         self.wrcu = wrcu 
-
-    def sequence_write_test(self, slba, eLba, secCnt, step):
-        u = EricUtility()
-        writeBuf = (ctypes.c_uint8 * (secCnt * BYTE_PER_SECTOR))()
-        for lba in range(slba, eLba, step):
-            u.fill_buffer_4b(lba, writeBuf, 0, len(writeBuf))
-            self.wrcu.write_read_cmp(lba, secCnt, writeBuf, False)
         
     def get_random_lba_len(self, maxLba, maxSecCnt, step):
         lba = random.randrange(maxLba)
@@ -37,6 +30,6 @@ class WriteReadTest:
         while True:
             step+=1
             lba, secCnt = self.get_random_lba_len(maxLba, maxSecCnt, step)
-            writeBuf = (ctypes.c_uint8 * (secCnt * BYTE_PER_SECTOR))()
-            u.fill_buffer_4b(lba, writeBuf, 0, len(writeBuf))
+            writeBuf = (ctypes.c_uint8 * (secCnt * byte_per_sec()))()
+            u.fill_buffer_4b(lba, writeBuf)
             self.wrcu.write_read_cmp(lba, secCnt, writeBuf, False)

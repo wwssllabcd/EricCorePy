@@ -3,7 +3,6 @@ from EricCorePy.Nvme.NvmeCmdObj import *
 from EricCorePy.Nvme.NvmeIoCtrl import *
 
 def get_nvme_cmd_obj(devNvmeXnY):
-    #devNum = int(devNvmeXnY[9])
     nsid = int(devNvmeXnY[11])
     return NvmeCmd(devNvmeXnY, nsid)
 
@@ -18,7 +17,7 @@ class NvmeCmd():
     def lba_read(self, lba, secCnt):
         return send_nvme_cmd(self.dev, nvme_cmd_lba_read(self.nsid, lba, secCnt))
 
-    def identify(self):
+    def identify_ns(self):
         return send_nvme_cmd(self.dev, nvme_cmd_id_ns(self.nsid))
 
     def zns_report_zones(self, slba, dataLen, zra, zrasf, isPartial):

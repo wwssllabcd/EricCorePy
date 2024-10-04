@@ -9,6 +9,8 @@ from datetime import datetime
 import logging
 from logging.handlers import RotatingFileHandler
 
+import traceback
+
 CRLF = "\r\n"
 NULL_32 = 0xFFFFFFFF
 
@@ -20,12 +22,13 @@ def eprint(*args, **kwargs):
     if m_logger != None:
         m_logger.debug(*args, **kwargs)
 
-def init_logger(fileName):
+def init_logger():
     u = EricUtility()
     u.make_folder("./log")
     fileName = "log/log-" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".log"
 
     global m_logger
+
     m_logger = logging.getLogger("mylog")
     m_logger.setLevel(logging.DEBUG)
 
@@ -104,18 +107,14 @@ class EricUtility:
         except Exception as e:
             return False
 
-    def set_array_value_le(self, bufList, offset, value):
-        bufList[offset+3] = (value >> 0x18) & 0xFF
-        bufList[offset+2] = (value >> 0x10) & 0xFF
-        bufList[offset+1] = (value >> 0x08) & 0xFF
-        bufList[offset+0] = (value >> 0x00) & 0xFF
-        return bufList
+    def set_array_value_le(self, buffer, value, offset=0):
+        buffer[offset+3] = (value >> 0x18) & 0xFF
+        buffer[offset+2] = (value >> 0x10) & 0xFF
+        buffer[offset+1] = (value >> 0x08) & 0xFF
+        buffer[offset+0] = (value >> 0x00) & 0xFF
     
     def get_array_value_le(self, bufList, offset):
-        value = bufList[offset+3] << 24
-        value += bufList[offset+2] << 16
-        value += bufList[offset+1] << 8
-        value += bufList[offset+0]
+        value = (bufList[3] << 24) + (bufList[2] << 16) + (bufList[1] << 8) + bufList[0]
         return value
     
     def set_array_value_be(self, bufList, offset, value):
@@ -237,9 +236,46 @@ class EricUtility:
         writeBuf = (ctypes.c_uint32 * u32Cnt)(*buf)
         return writeBuf
         
-    def fill_buffer_4b(self, value, buffer, offset, length):
+    def fill_buffer_over_512b(self, value, buffer, length=0, offset=0):
+        if length==0:
+            length = len(buffer)
+
+        # 將 value 轉換為位元組表示
+        valueBytes = value.to_bytes(4, byteorder='little')
+        
+        # 計算初始填充塊大小
+        chunkSize = 512
+        fillChunk = valueBytes * (chunkSize // 4)
+
+        # 計算要填充的次數
+        numOfChunks = length // chunkSize
+        remainBytes = length % chunkSize
+
+        # 先填充一個較大的塊，以減少後續填充次數
+        for _ in range(numOfChunks):
+            buffer[offset:offset + chunkSize] = fillChunk
+            offset += chunkSize
+       
+        if remainBytes > 0:
+            buffer[offset : offset + remainBytes] = fillChunk[:remainBytes]
+
+
+    def fill_buffer_4b(self, value, buffer, length=0, offset=0):
+        if length==0:
+            length = len(buffer)
+            if length==0:
+                raise Exception("length should not be 0")
+
+
+     
+        if (length >= 512):
+            self.fill_buffer_over_512b(value, buffer, length, offset)
+            return
+
+        valueBytes = value.to_bytes(4, byteorder='little')
+
         for i in range(0, length, 4):
-            self.set_array_value_le(buffer, offset + i, value)
+            buffer[offset+i : offset+i+4] = valueBytes
 
         return buffer
     
@@ -247,6 +283,14 @@ class EricUtility:
         return buffer1 == buffer2
     
     def get_time_now(self):
-        curTime = datetime.now()
-        return curTime.strftime("%Y-%m-%d_%H-%M-%S")
+        return datetime.now()
+
+    def show_exception(self, e):
+        eprint(f"Exception: {e}")
+        eprint(traceback.format_exc())
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        eprint(f"exception type: {exc_type}")
+        eprint(f"exception value: {exc_value}")
+        eprint(f"exception trace: {exc_traceback}")
+
 
