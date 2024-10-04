@@ -150,7 +150,7 @@ def nvme_cmd_get_log_page(nsid, logId, dwLen):
         print("dwLen should not be 0", hex(dwLen))
     
     cmd = NvmeCmdObj()
-    cmd.desc = "Admin: Get LogPage"
+    cmd.desc = "Admin: Get Log Page"
     cmd.opcode = NVME_ADMIN_GET_LOG_PAGE
     cmd.nsid = nsid
     cmd.dataLen = dwLen * 4
