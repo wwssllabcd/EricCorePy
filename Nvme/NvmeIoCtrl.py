@@ -30,8 +30,7 @@ def send_nvme_cmd_base(dev, cmd, ioctlNum):
 
     
 def to_ctype_addr(byteArray):
-    lens = len(byteArray)
-    ctypeBuf = ctypes.c_char * lens
+    ctypeBuf = ctypes.c_char * len(byteArray)
 
     # from_buffer 方法不會複製資料，它只是建立了一個新的 ctypes object，使得這個 object 可以以 ctypes 支援的方式訪問 byteArray 的底層記憶體。
     newCtypeBuf = ctypeBuf.from_buffer(byteArray)

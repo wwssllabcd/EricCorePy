@@ -22,15 +22,22 @@ class SCSI_PASS_THROUGH_DIRECT(ctypes.Structure):
         ("Cdb", ctypes.c_ubyte * 16)
     ]
 
-def scsi_pass_through_direct(handle, cdb, dataBuffer, direction=SCSI_IOCTL_DATA_IN, timeout=20):
+def to_ctype_addr(byteArray):
+    data_buffer_ctypes = (ctypes.c_char * len(byteArray)).from_buffer(byteArray)
+    return ctypes.addressof(data_buffer_ctypes)
+
+def scsi_pass_through_direct(handle, cdb, byteArray: bytearray, direction=SCSI_IOCTL_DATA_IN, timeout=20):
     sptd = SCSI_PASS_THROUGH_DIRECT()
     sptd.Length = ctypes.sizeof(SCSI_PASS_THROUGH_DIRECT)
     sptd.CdbLength = len(cdb)
     sptd.SenseInfoLength = 0
     sptd.DataIn = direction
-    sptd.DataTransferLength = ctypes.sizeof(dataBuffer)
+    sptd.DataTransferLength = len(byteArray)
     sptd.TimeOutValue = timeout
-    sptd.DataBuffer = ctypes.cast(ctypes.pointer(dataBuffer), ctypes.c_void_p)
+    
+    sptd.DataBuffer = to_ctype_addr(byteArray)
+    
+
     sptd.SenseInfoOffset = 0
     sptd.Cdb[:len(cdb)] = cdb
 
@@ -50,5 +57,5 @@ def scsi_pass_through_direct(handle, cdb, dataBuffer, direction=SCSI_IOCTL_DATA_
     if result == 0:
         raise ctypes.WinError()
 
-    return bytes(dataBuffer)
+    return byteArray
 
