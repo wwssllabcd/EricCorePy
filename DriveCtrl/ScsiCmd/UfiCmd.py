@@ -1,6 +1,4 @@
-
 from .ScsiCmdObj import *
-
 
 class UfiCmdSet:
     def get_read_10(self):
