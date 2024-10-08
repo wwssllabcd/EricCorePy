@@ -2,7 +2,7 @@ from EricCorePy.DriveCtrl.ScsiCmd.WinScsiPassThrough import *
 from EricCorePy.DriveCtrl.ScsiCmd.ScsiCmdObj import *
 
 
-def send_scsi_cmd(handle, cmd: ScsiCmdObj, writeBuffer=None):
+def send_scsi_cmd(handle, cmd: ScsiCmdObj, writeBuffer:bytearray=None):
     if cmd.direct == SCSI_IOCTL_DATA_IN:
         byteArray = bytearray(cmd.dataLen)
     else:

@@ -19,7 +19,7 @@ FAKE_DEVICE = False
 def ioc(dir, type, nr, size):
     return (dir << 30) | (size << 16) | (type << 8) | nr
 
-def send_nvme_cmd_base(dev, cmd, ioctlNum):
+def send_nvme_cmd_base(dev, cmd:NvmeCmdObj, ioctlNum):
     with open(dev, 'r') as fd:
 	    # max xfer size = 0x200 sector
         res = ioctl(fd, ioctlNum, cmd.to_c_array())
@@ -36,7 +36,7 @@ def to_ctype_addr(byteArray):
     newCtypeBuf = ctypeBuf.from_buffer(byteArray)
     return ctypes.addressof(newCtypeBuf)
 
-def send_nvme_cmd(dev, cmd, writeBuf = None):
+def send_nvme_cmd(dev, cmd:NvmeCmdObj, writeBuf = None):
     ioctlNum = 0
     
     if cmd.isAdminCmd:

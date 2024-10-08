@@ -30,11 +30,9 @@ NVME_OPC_ZONE_MGMT_SEND = 0x79
 NVME_OPC_ZONE_MGMT_RECV = 0x7A
 NVME_OPC_ZONE_APPEND = 0x7D
 
-class NvmePtCmd(ctypes.Structure):
+class NvmeCmd_64B(ctypes.Structure):
     _fields_ = [
-        ('opcode', ctypes.c_ubyte),
-        ('flags', ctypes.c_ubyte),
-        ('rsvd1', ctypes.c_ushort),
+        ('opcode', ctypes.c_uint32),
         ('nsid', ctypes.c_uint32),
         ('cdw2', ctypes.c_uint32),
         ('cdw3', ctypes.c_uint32),
@@ -48,6 +46,11 @@ class NvmePtCmd(ctypes.Structure):
         ('cdw13', ctypes.c_uint32),
         ('cdw14', ctypes.c_uint32),
         ('cdw15', ctypes.c_uint32),
+    ]
+
+class NvmePtCmd(ctypes.Structure):
+    _fields_ = [
+        ('cmd', NvmeCmd_64B),  
         ('timeout_ms', ctypes.c_uint32),
         ('result', ctypes.c_uint32)    
     ]
@@ -68,20 +71,32 @@ class NvmeCmdObj():
         self.isAdminCmd = True
         self.dataLen = 0
         self.desc = ""
+
+    def to_nvme_pt_cmd(self) -> NvmePtCmd:
+        cmd_64b = NvmeCmd_64B(
+            opcode=self.opcode,
+            nsid=self.nsid,
+            cdw2=self.cdw2,
+            cdw3=self.cdw3,
+            metaAddr=0,
+            dataAddr=self.dataAddr,
+            metaLen=0,
+            dataLen=self.dataLen,
+            cdw10=self.cdw10,
+            cdw11=self.cdw11,
+            cdw12=self.cdw12,
+            cdw13=self.cdw13,
+            cdw14=self.cdw14,
+            cdw15=self.cdw15,
+        )
+        return NvmePtCmd(cmd=cmd_64b, timeout_ms=0, result=0)
+    
     
     def to_c_array(self) -> NvmePtCmd:
-        return NvmePtCmd(
-            opcode = self.opcode,
-            nsid = self.nsid,
-            dataAddr = self.dataAddr,
-            dataLen = self.dataLen,
-            cdw10 = self.cdw10,
-            cdw11 = self.cdw11,
-            cdw12 = self.cdw12,
-            cdw13 = self.cdw13,
-            cdw14 = self.cdw14,
-            cdw15 = self.cdw15,
-        )
+        return self.to_nvme_pt_cmd()
+    
+    def to_64b(self) -> NvmeCmd_64B:
+        return self.to_nvme_pt_cmd().cmd
     
     def __str__(self) -> str:
         # buf = bytearray(self.to_c_array()) 
