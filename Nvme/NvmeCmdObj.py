@@ -68,7 +68,9 @@ class NvmeCmdObj():
         self.cdw13 = 0
         self.cdw14 = 0
         self.cdw15 = 0
+
         self.isAdminCmd = True
+        self.isDataIn = True
         self.dataLen = 0
         self.desc = ""
 
@@ -96,7 +98,11 @@ class NvmeCmdObj():
         return self.to_nvme_pt_cmd()
     
     def to_64b(self) -> NvmeCmd_64B:
-        return self.to_nvme_pt_cmd().cmd
+        cmd = self.to_nvme_pt_cmd().cmd
+
+        byte_array = (ctypes.c_uint8 * 64)()
+        ctypes.memmove(byte_array, ctypes.byref(cmd), ctypes.sizeof(cmd))
+        return byte_array
     
     def __str__(self) -> str:
         # buf = bytearray(self.to_c_array()) 
@@ -195,6 +201,7 @@ def nvme_cmd_lba_write(nsid, slba, secCnt):
     cmd.opcode = NVME_IO_CMD_WRITE
     cmd.nsid = nsid
     cmd.dataLen = secCnt * BYTE_PER_SECTOR
+    cmd.isDataIn = False
 
     cmd.cdw10 = slba & 0xffffffff
     cmd.cdw11 = slba >> 32

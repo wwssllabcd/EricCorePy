@@ -1,8 +1,8 @@
 
-from ScsiCmdDefine import *
+from .ScsiCmdDefine import *
 
 
-BYTE_PER_SECTOR = 512
+
 
 class ScsiCmdObj:
     def __init__(self):
@@ -43,10 +43,8 @@ class UfiCmdSet:
     def ata_pass_through_12(self):
         cmd = ScsiCmdObj()
         cmd.cdb[0] = SCSI_OP_SAT12
-        cmd.cdb[4] = 0x24
-        cmd.dataLen = 0x24
         cmd.desc = "SCSI: ata_pass_through_12"
-        cmd.direct = SCSI_IOCTL_DATA_IN
+        cmd.direct = SCSI_IOCTL_NON_DATA
         return cmd
 
 

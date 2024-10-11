@@ -75,12 +75,43 @@ class EricUtility:
             if(cnt == maxCnt):
                 break
         return str1
+    
+    def make_hex_table_4b(self, dataList, maxCnt=0):
+        str1 = ""
+        cnt = 0
+
+        if len(dataList) %4 != 0:
+            raise ValueError("dataList length must be a multiple of 4.")
+        
+        for i in range(0, len(dataList), 4):
+            if maxCnt > 0 and cnt >= maxCnt:
+                break
+            
+            str1 += self.make_table_crlf(cnt)
+            str1 += self.make_table_header(cnt)
+
+            # 確保不超出範圍，並組合 4 個字節為一個 u32
+            u32_value = 0
+            for j in range(4):
+                if i + j < len(dataList):
+                    u32_value |= dataList[i + j] << (8 * j)
+
+            # 將 u32 值格式化為 8 位十六進制
+            str1 += format(u32_value, '08X') + " "
+            cnt += 4
+
+        return str1
 
     def make_ascii_table(self, dataList, maxCnt=0):
         str1 = ""
         cnt = 0
         for d in dataList:
-            str1 += chr(d)
+            c = chr(d)
+
+            if c.isprintable() == False:
+                c = "."
+
+            str1 += c
             cnt += 1
             if (cnt % 0x10) == 0:
                 str1 += CRLF

@@ -106,9 +106,8 @@ def get_storage_device_descriptor(device):
     if not success:
         return None
 
-    # 解析返回的 STORAGE_DEVICE_DESCRIPTOR 结构
-    device_descriptor = STORAGE_DEVICE_DESCRIPTOR.from_buffer_copy(output_buffer)
-    return (device_descriptor, output_buffer)
+   
+    return output_buffer
 
 def extract_string(offset, output_buffer):
     if offset != 0 and offset < len(output_buffer):
@@ -116,13 +115,12 @@ def extract_string(offset, output_buffer):
     return None
 
 def get_device_desc(device):
-    res = get_storage_device_descriptor(device)
-    if res == None:
+    buffer = get_storage_device_descriptor(device)
+    if buffer == None:
         return None
     
-    desc: STORAGE_DEVICE_DESCRIPTOR
-    buffer: ctypes.Array
-    desc, buffer = res
+     # 解析返回的 STORAGE_DEVICE_DESCRIPTOR 结构
+    desc = STORAGE_DEVICE_DESCRIPTOR.from_buffer_copy(buffer)
 
     d = DeviceInfo()
 
@@ -141,13 +139,13 @@ def get_device_handle(filterFun = None):
 
         deviceInfo = DeviceInfo()
         deviceInfo = get_device_desc(deviceHandle)
+        deviceInfo.devicePath = devStr
+        deviceInfo.deviceHandle = deviceHandle
+
         if filterFun != None:
             if filterFun(deviceInfo) == False:
                 close_device(deviceHandle)
                 continue
         
-        deviceInfo.devicePath = devStr
-        deviceInfo.deviceHandle = deviceHandle
-
         devices.append(deviceInfo)
     return devices

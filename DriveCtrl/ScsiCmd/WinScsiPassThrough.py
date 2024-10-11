@@ -1,9 +1,9 @@
 import ctypes
 from ctypes import wintypes
+from .ScsiCmdDefine import *
 
 IOCTL_SCSI_PASS_THROUGH_DIRECT = 0x4D014
-SCSI_IOCTL_DATA_IN = 1
-SCSI_IOCTL_DATA_OUT = 0
+
 
 class SCSI_PASS_THROUGH_DIRECT(ctypes.Structure):
     _fields_ = [
