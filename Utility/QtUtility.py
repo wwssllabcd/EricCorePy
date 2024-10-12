@@ -14,9 +14,6 @@ class QtUtility:
         msgBox.setText(msg)
         msgBox.exec_()
 
-    def is_rdo_check(self, rdoBtn):
-        return rdoBtn.isChecked()
-
     def is_key_event_page_down(self, event):
         return event.key() ==  self.KEY_EVENT_PAGE_DOWN
 
