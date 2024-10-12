@@ -1,8 +1,9 @@
 from fcntl import ioctl
-from ctypes import *
+
 from EricCorePy.Nvme.NvmeCmdObj import *
 from EricCorePy.Nvme.NvmeFake import *
 from EricCorePy.Utility.EricUtility import CRLF
+from EricCorePy.Utility.CtypeUtility import *
 
 IO_DIR_NONE = 0
 IO_DIR_WRITE = 1
@@ -28,14 +29,6 @@ def send_nvme_cmd_base(dev, cmd:NvmeCmdObj, ioctlNum):
             msg += "cmd = " + str(cmd)
             raise Exception(msg)
 
-    
-def to_ctype_addr(byteArray):
-    ctypeBuf = ctypes.c_char * len(byteArray)
-
-    # from_buffer 方法不會複製資料，它只是建立了一個新的 ctypes object，使得這個 object 可以以 ctypes 支援的方式訪問 byteArray 的底層記憶體。
-    newCtypeBuf = ctypeBuf.from_buffer(byteArray)
-    return ctypes.addressof(newCtypeBuf)
-
 def send_nvme_cmd(dev, cmd:NvmeCmdObj, writeBuf = None):
     ioctlNum = 0
     
@@ -55,7 +48,7 @@ def send_nvme_cmd(dev, cmd:NvmeCmdObj, writeBuf = None):
         msg = "only support bytearray" + CRLF
         raise Exception(msg)
 
-    cmd.dataAddr = to_ctype_addr(byteArray)
+    cmd.dataAddr = get_ctype_addr(byteArray)
 
     if FAKE_DEVICE:
         send_nvme_cmd_fake(dev, cmd, ioctlNum, byteArray)

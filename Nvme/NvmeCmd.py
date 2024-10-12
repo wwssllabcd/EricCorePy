@@ -1,4 +1,3 @@
-from ctypes import *
 from EricCorePy.Nvme.NvmeCmdObj import *
 from EricCorePy.Nvme.NvmeIoCtrl import *
 

@@ -1,13 +1,13 @@
-import ctypes
-from ctypes import wintypes
+from ctypes import c_uint32
 from .ScsiCmdDefine import *
+from EricCorePy.Utility.CtypeUtility import *
 
 IOCTL_SCSI_PASS_THROUGH_DIRECT = 0x4D014
 
 
 class SCSI_PASS_THROUGH_DIRECT(ctypes.Structure):
     _fields_ = [
-        ("Length", wintypes.USHORT),
+        ("Length", ctypes.c_uint16),
         ("ScsiStatus", ctypes.c_ubyte),
         ("PathId", ctypes.c_ubyte),
         ("TargetId", ctypes.c_ubyte),
@@ -15,18 +15,14 @@ class SCSI_PASS_THROUGH_DIRECT(ctypes.Structure):
         ("CdbLength", ctypes.c_ubyte),
         ("SenseInfoLength", ctypes.c_ubyte),
         ("DataIn", ctypes.c_ubyte),
-        ("DataTransferLength", wintypes.ULONG),
-        ("TimeOutValue", wintypes.ULONG),
+        ("DataTransferLength", ctypes.c_int32),
+        ("TimeOutValue", ctypes.c_int32),
         ("DataBuffer", ctypes.c_void_p),
-        ("SenseInfoOffset", wintypes.ULONG),
+        ("SenseInfoOffset", ctypes.c_int32),
         ("Cdb", ctypes.c_ubyte * 16)
     ]
 
-def to_ctype_addr(byteArray):
-    data_buffer_ctypes = (ctypes.c_char * len(byteArray)).from_buffer(byteArray)
-    return ctypes.addressof(data_buffer_ctypes)
-
-def scsi_pass_through_direct(handle, cdb, byteArray: bytearray, direction=SCSI_IOCTL_DATA_IN, timeout=20):
+def win_scsi_pass_through_direct(handle, cdb, byteArray: bytearray, direction=SCSI_IOCTL_DATA_IN, timeout=20):
     sptd = SCSI_PASS_THROUGH_DIRECT()
     sptd.Length = ctypes.sizeof(SCSI_PASS_THROUGH_DIRECT)
     sptd.CdbLength = len(cdb)
@@ -35,13 +31,12 @@ def scsi_pass_through_direct(handle, cdb, byteArray: bytearray, direction=SCSI_I
     sptd.DataTransferLength = len(byteArray)
     sptd.TimeOutValue = timeout
     
-    sptd.DataBuffer = to_ctype_addr(byteArray)
-    
+    sptd.DataBuffer = get_ctype_addr(byteArray)
 
     sptd.SenseInfoOffset = 0
     sptd.Cdb[:len(cdb)] = cdb
 
-    bytes_returned = wintypes.DWORD()
+    bytes_returned = c_uint32()
 
     result = ctypes.windll.kernel32.DeviceIoControl(
         handle,

@@ -1,10 +1,7 @@
 
 from .ScsiCmdDefine import *
 
-
-
-
-class ScsiCmdObj:
+class ScsiCmdBase:
     def __init__(self):
         self.cdb = [0]*16
         self.dataLen = 0
@@ -13,7 +10,7 @@ class ScsiCmdObj:
 
 class UfiCmdSet:
     def get_read_10(self):
-        cmd = ScsiCmdObj()
+        cmd = ScsiCmdBase()
         cmd.cdb[0] = UFI_OP_READ_10
         cmd.cdb[8] = 0x01
         cmd.dataLen = cmd.cdb[8]*BYTE_PER_SECTOR
@@ -23,7 +20,7 @@ class UfiCmdSet:
         return cmd
 
     def get_write_10(self):
-        cmd = ScsiCmdObj()
+        cmd = ScsiCmdBase()
         cmd.cdb[0] = UFI_OP_WRITE_10
         cmd.cdb[8] = 0x01
         cmd.dataLen = cmd.cdb[8]*BYTE_PER_SECTOR
@@ -32,7 +29,7 @@ class UfiCmdSet:
         return cmd
 
     def inquiry(self):
-        cmd = ScsiCmdObj()
+        cmd = ScsiCmdBase()
         cmd.cdb[0] = UFI_OP_INQUIRY
         cmd.cdb[4] = 0x24
         cmd.dataLen = 0x24
@@ -41,12 +38,11 @@ class UfiCmdSet:
         return cmd
     
     def ata_pass_through_12(self):
-        cmd = ScsiCmdObj()
+        cmd = ScsiCmdBase()
         cmd.cdb[0] = SCSI_OP_SAT12
         cmd.desc = "SCSI: ata_pass_through_12"
         cmd.direct = SCSI_IOCTL_NON_DATA
         return cmd
-
 
     def get_cmd_colls(self):
         cmdColl = [self.inquiry(), self.get_write_10(), self.get_read_10(),  self.ata_pass_through_12()]

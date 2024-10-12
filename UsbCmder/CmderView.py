@@ -61,7 +61,7 @@ class CmderView():
         return False
 
     def get_cmd_from_form(self):
-        cmd = ScsiCmdObj()
+        cmd = ScsiCmdBase()
         for i in range(len(self.m_cdb)):
             cmd.cdb[i] = self.m_u.hex_string_to_int(self.m_cdb[i].text())
 

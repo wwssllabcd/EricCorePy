@@ -1,5 +1,6 @@
 import ctypes
 from EricCorePy.Utility.EricUtility import *
+from EricCorePy.Utility.CtypeUtility import *
 
 #----- Config -----
 BYTE_PER_SECTOR = 512
@@ -99,10 +100,7 @@ class NvmeCmdObj():
     
     def to_64b(self) -> NvmeCmd_64B:
         cmd = self.to_nvme_pt_cmd().cmd
-
-        byte_array = (ctypes.c_uint8 * 64)()
-        ctypes.memmove(byte_array, ctypes.byref(cmd), ctypes.sizeof(cmd))
-        return byte_array
+        return ctype_struct_to_bytearray(cmd)
     
     def __str__(self) -> str:
         # buf = bytearray(self.to_c_array()) 
