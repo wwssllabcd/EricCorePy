@@ -31,97 +31,31 @@ NVME_OPC_ZONE_MGMT_SEND = 0x79
 NVME_OPC_ZONE_MGMT_RECV = 0x7A
 NVME_OPC_ZONE_APPEND = 0x7D
 
-class NvmeCmd_64B(ctypes.Structure):
-    _fields_ = [
-        ('opcode', ctypes.c_uint32),
-        ('nsid', ctypes.c_uint32),
-        ('cdw2', ctypes.c_uint32),
-        ('cdw3', ctypes.c_uint32),
-        ('metaAddr', ctypes.c_uint64),
-        ('dataAddr', ctypes.c_uint64),
-        ('metaLen', ctypes.c_uint32),
-        ('dataLen', ctypes.c_uint32),
-        ('cdw10', ctypes.c_uint32),
-        ('cdw11', ctypes.c_uint32),
-        ('cdw12', ctypes.c_uint32),
-        ('cdw13', ctypes.c_uint32),
-        ('cdw14', ctypes.c_uint32),
-        ('cdw15', ctypes.c_uint32),
-    ]
-
-class NvmePtCmd(ctypes.Structure):
-    _fields_ = [
-        ('cmd', NvmeCmd_64B),  
-        ('timeout_ms', ctypes.c_uint32),
-        ('result', ctypes.c_uint32)    
-    ]
-
 class NvmeCmdObj():
     def __init__(self):
-        self.opcode = 0 # cdw0
-        self.nsid = 0   # cdw1
-        self.cdw2 = 0
-        self.cdw3 = 0
-        self.dataAddr = 0
-        self.cdw10 = 0
-        self.cdw11 = 0
-        self.cdw12 = 0
-        self.cdw13 = 0
-        self.cdw14 = 0
-        self.cdw15 = 0
-
+        self.cdws = [0] * 16
         self.isAdminCmd = True
         self.isDataIn = True
         self.dataLen = 0
         self.desc = ""
 
-    def to_nvme_pt_cmd(self) -> NvmePtCmd:
-        cmd_64b = NvmeCmd_64B(
-            opcode=self.opcode,
-            nsid=self.nsid,
-            cdw2=self.cdw2,
-            cdw3=self.cdw3,
-            metaAddr=0,
-            dataAddr=self.dataAddr,
-            metaLen=0,
-            dataLen=self.dataLen,
-            cdw10=self.cdw10,
-            cdw11=self.cdw11,
-            cdw12=self.cdw12,
-            cdw13=self.cdw13,
-            cdw14=self.cdw14,
-            cdw15=self.cdw15,
-        )
-        return NvmePtCmd(cmd=cmd_64b, timeout_ms=0, result=0)
-    
-    
-    def to_c_array(self) -> NvmePtCmd:
-        return self.to_nvme_pt_cmd()
-    
-    def to_64b(self) -> NvmeCmd_64B:
-        cmd = self.to_nvme_pt_cmd().cmd
-        return ctype_struct_to_bytearray(cmd)
-    
     def __str__(self) -> str:
-        # buf = bytearray(self.to_c_array()) 
         msg = "NvmeCmd" + CRLF
-        # msg = ''.join('{:02X}, '.format(x) for x in buf)
-        # msg += CRLF
-        msg += "opcode = " + hex(self.opcode) + CRLF
-        msg += "nsid = " + hex(self.nsid) + CRLF
-        msg += "cdw2 = " + hex(self.cdw2) + CRLF
-        msg += "cdw3 = " + hex(self.cdw3) + CRLF
-        msg += "dataAddr = " + hex(self.dataAddr) + CRLF
-        msg += "cdw10 = " + hex(self.cdw10) + CRLF
-        msg += "cdw11 = " + hex(self.cdw11) + CRLF
-        msg += "cdw12 = " + hex(self.cdw12) + CRLF
-        msg += "cdw13 = " + hex(self.cdw13) + CRLF
-        msg += "cdw14 = " + hex(self.cdw14) + CRLF
-        msg += "cdw15 = " + hex(self.cdw15) + CRLF
-        msg += "isAdminCmd = " + hex(self.isAdminCmd) + CRLF
-        msg += "dataLen = " + hex(self.dataLen) + CRLF
-        msg += "desc = " + self.desc + CRLF
         return msg
+    
+    def to_64b(self):
+        u = EricUtility()
+        return u.list_to_bytearray(self.cdws)
+    
+    def to_ioctl_ary(self) -> bytearray:
+        bAry = self.to_64b()
+        
+        timeout_ms = 0
+        bAry.extend(timeout_ms.to_bytes(4, byteorder='little'))
+
+        result = 0
+        bAry.extend(result.to_bytes(4, byteorder='little'))
+        return bAry
 
 def byte_per_sec():
     return BYTE_PER_SECTOR
@@ -130,7 +64,7 @@ def byte_per_sec():
 def get_normal_nvme_cmd():
     cmds = []
     cmds.append(nvme_cmd_id_ctrler())
-    cmds.append(nvme_cmd_id_ns(0))
+    cmds.append(nvme_cmd_id_ns(1))
     cmds.append(nvme_cmd_get_log_page(0, 0, 1))
 
     # io cmd
@@ -149,19 +83,21 @@ def get_zns_nvme_cmd():
 def nvme_cmd_id_ctrler():
     cmd = NvmeCmdObj()
     cmd.desc = "Admin: Identify Controller"
-    cmd.opcode = NVME_ADMIN_IDENTIFY
+    cmd.cdws[0] = NVME_ADMIN_IDENTIFY
+    cmd.cdws[1] = 0 # NSID fixed 0
+    cmd.cdws[10] = NVME_ID_CNS_CTRL
+    
     cmd.dataLen = 0x1000
-    cmd.cdw10 = NVME_ID_CNS_CTRL
-    cmd.nsid = 0 # NSID fixed 0
     return cmd
 
 def nvme_cmd_id_ns(nsid):
     cmd = NvmeCmdObj()
     cmd.desc = "Admin: Identify Namespace"
-    cmd.opcode = NVME_ADMIN_IDENTIFY
+    cmd.cdws[0] = NVME_ADMIN_IDENTIFY
+    cmd.cdws[1] = nsid
+    cmd.cdws[10] = NVME_ID_CNS_NS
+    
     cmd.dataLen = 0x1000
-    cmd.cdw10 = NVME_ID_CNS_NS
-    cmd.nsid = nsid
     return cmd
 
 def nvme_cmd_get_log_page(nsid, logId, dwLen):
@@ -170,87 +106,92 @@ def nvme_cmd_get_log_page(nsid, logId, dwLen):
     
     cmd = NvmeCmdObj()
     cmd.desc = "Admin: Get Log Page"
-    cmd.opcode = NVME_ADMIN_GET_LOG_PAGE
-    cmd.nsid = nsid
-    cmd.dataLen = dwLen * 4
-
+    cmd.cdws[0] = NVME_ADMIN_GET_LOG_PAGE
+    cmd.cdws[1] = nsid
     dwNum = dwLen - 1 # start from 0
-    cmd.cdw10 = (logId & 0xFF) + ((dwNum & 0xFFFF) << 16)
-    cmd.cdw11 = (dwNum>>16) & 0xFFFF
+    cmd.cdws[10] = (logId & 0xFF) + ((dwNum & 0xFFFF) << 16)
+    cmd.cdws[11] = (dwNum>>16) & 0xFFFF
+
+    cmd.dataLen = dwLen * 4
     return cmd
 
 def nvme_cmd_lba_read(nsid, slba, secCnt):
     cmd = NvmeCmdObj()
     cmd.desc = "IO: Read"
-    cmd.isAdminCmd = False
-    cmd.opcode = NVME_IO_CMD_READ
-    cmd.nsid = nsid
-    cmd.dataLen = secCnt * BYTE_PER_SECTOR
+    
+    cmd.cdws[0] = NVME_IO_CMD_READ
+    cmd.cdws[1] = nsid
+    cmd.cdws[10] = slba & 0xffffffff
+    cmd.cdws[11] = slba >> 32
+    cmd.cdws[12] = secCnt - 1
 
-    cmd.cdw10 = slba & 0xffffffff
-    cmd.cdw11 = slba >> 32
-    cmd.cdw12 = secCnt - 1
+    cmd.dataLen = secCnt * BYTE_PER_SECTOR
     return cmd
 
 def nvme_cmd_lba_write(nsid, slba, secCnt):
     cmd = NvmeCmdObj()
     cmd.desc = "IO: Write"
+    
+    cmd.cdws[0] = NVME_IO_CMD_WRITE
+    cmd.cdws[1] = nsid
+    cmd.cdws[10] = slba & 0xffffffff
+    cmd.cdws[10] = slba >> 32
+    cmd.cdws[12] = secCnt - 1
+
     cmd.isAdminCmd = False
-    cmd.opcode = NVME_IO_CMD_WRITE
-    cmd.nsid = nsid
     cmd.dataLen = secCnt * BYTE_PER_SECTOR
     cmd.isDataIn = False
-
-    cmd.cdw10 = slba & 0xffffffff
-    cmd.cdw11 = slba >> 32
-    cmd.cdw12 = secCnt - 1
     return cmd
 
 ##-------- ZNS --------
 def nvme_cmd_id_cns_zns(nsid):
     cmd = NvmeCmdObj()
     cmd.desc = "Admin-ZNS: Identify"
-    cmd.opcode = NVME_ADMIN_IDENTIFY
+    cmd.cdws[0] = NVME_ADMIN_IDENTIFY
+    cmd.cdws[1] = nsid
+    cmd.cdws[10] = 0x05
+
     cmd.dataLen = 0x1000
-    cmd.cdw10 = 0x05
-    cmd.nsid = nsid
     return cmd
 
 def nvme_cmd_set_zone(nsid, slba, zoneSetAction, selectionAll):
     cmd = NvmeCmdObj()
     cmd.desc = "IO-ZNS: Set Zone"
 
-    cmd.opcode = NVME_OPC_ZONE_MGMT_SEND
-    cmd.nsid = nsid
-    cmd.cdw10 = slba & 0xffffffff
-    cmd.cdw11 = slba >> 32
-    cmd.cdw13 = zoneSetAction | selectionAll << 8
+    cmd.cdws[0] = NVME_OPC_ZONE_MGMT_SEND
+    cmd.cdws[1] = nsid
+    cmd.cdws[10] = slba & 0xffffffff
+    cmd.cdws[10] = slba >> 32
+    cmd.cdws[12] = zoneSetAction | selectionAll << 8
+
     cmd.isAdminCmd = False
     return cmd
 
 def nvme_cmd_zone_append(nsid, slba, secCnt):
     cmd = NvmeCmdObj()
     cmd.desc = "IO-ZNS: Append"
-    cmd.isAdminCmd = False
-    cmd.opcode = NVME_OPC_ZONE_APPEND
-    cmd.nsid = nsid
-    cmd.dataLen = secCnt * BYTE_PER_SECTOR
+    
+    cmd.cdws[0] = NVME_OPC_ZONE_APPEND
+    cmd.cdws[1] = nsid
+    cmd.cdws[10] = slba & 0xffffffff
+    cmd.cdws[11] = slba >> 32
+    cmd.cdws[12] = secCnt - 1
 
-    cmd.cdw10 = slba & 0xffffffff
-    cmd.cdw11 = slba >> 32
-    cmd.cdw12 = secCnt - 1
+    cmd.isAdminCmd = False
+    cmd.dataLen = secCnt * BYTE_PER_SECTOR
     return cmd
 
 def nvme_cmd_report_zone(nsid, slba, dataLen, zra, zrasf, isPartial):
     cmd = NvmeCmdObj()
     cmd.desc = "IO-ZNS: Report Zones"
 
-    cmd.opcode = NVME_OPC_ZONE_MGMT_RECV
-    cmd.nsid = nsid
-    cmd.dataLen = dataLen
-    cmd.cdw10 = slba & 0xffffffff
-    cmd.cdw11 = slba >> 32
-    cmd.cdw12 = (dataLen >> 2) - 1
-    cmd.cdw13 = zra | zrasf << 8 | isPartial << 16
+    cmd.cdws[0] = NVME_OPC_ZONE_MGMT_RECV
+    cmd.cdws[1] = nsid
+    cmd.cdws[10] = slba & 0xffffffff
+    cmd.cdws[11] = slba >> 32
+    cmd.cdws[12] = (dataLen >> 2) - 1
+    cmd.cdws[13] = zra | zrasf << 8 | isPartial << 16
+    
     cmd.isAdminCmd = False
+    cmd.dataLen = dataLen
     return cmd

@@ -103,7 +103,7 @@ class EricUtility:
         return str1
 
     def make_ascii_table(self, dataList, maxCnt=0):
-        str1 = ""
+        res = ""
         cnt = 0
         for d in dataList:
             c = chr(d)
@@ -111,15 +111,37 @@ class EricUtility:
             if c.isprintable() == False:
                 c = "."
 
-            str1 += c
+            res += c
             cnt += 1
             if (cnt % 0x10) == 0:
-                str1 += CRLF
+                res += CRLF
 
             if(cnt == maxCnt):
                 break
-        return str1
+        return res
+    
+    def make_ascii_table_2b(self, dataList):
+        res = ""
+        cnt = 0
+        for i in range(0, len(dataList), 2): 
+            
+            if i+1 < len(dataList):
+                d1, d2 = dataList[i], dataList[i+1]  
+            else:
+                d1, d2 = dataList[i], 0 
 
+            # Convert both bytes to printable characters or replace with "."
+            c1 = chr(d1) if chr(d1).isprintable() else "."
+            c2 = chr(d2) if chr(d2).isprintable() else "."
+
+            # Append the two characters together
+            res += c2 + c1
+            cnt += 2
+
+            if (cnt % 0x10) == 0:  # Break line after 16 bytes (8 characters)
+                res += CRLF
+        return res
+    
 
     def to_hex_string(self, value):
         return format(value, '02X')
@@ -324,4 +346,23 @@ class EricUtility:
         eprint(f"exception value: {exc_value}")
         eprint(f"exception trace: {exc_traceback}")
 
+    def list_to_bytearray(self, list) -> bytearray:
+        array = bytearray()
+        for item in list:
+            array.extend(item.to_bytes(4, byteorder='little'))
+        return array
+    
+    def bytearray_to_wordList(self, byteArray: bytearray):
+        if len(byteArray) % 2 != 0:
+            raise ValueError("Input bytearray length must be even.")
+        
+        # 使用 list comprehension 每次取兩個 bytes 組成一個 word
+        words = []
+        for i in range(0, len(byteArray), 2):
+            # 小端序 (little-endian) 組合
+            word = byteArray[i] | (byteArray[i + 1] << 8)
+            words.append(word)
+    
+        return words
+    
 

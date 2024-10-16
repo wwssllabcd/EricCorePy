@@ -2,6 +2,8 @@ from fcntl import ioctl
 
 from EricCorePy.Nvme.NvmeCmdObj import *
 from EricCorePy.Nvme.NvmeFake import *
+from EricCorePy.Nvme.NvmeIoCtrlLinux import *
+
 from EricCorePy.Utility.EricUtility import CRLF
 from EricCorePy.Utility.CtypeUtility import *
 
@@ -15,19 +17,6 @@ NVME_ADMIN_CMD_NUM = 0x41
 NVME_IO_CMD_NUM = 0x43
 
 FAKE_DEVICE = False
-
-
-def ioc(dir, type, nr, size):
-    return (dir << 30) | (size << 16) | (type << 8) | nr
-
-def send_nvme_cmd_base(dev, cmd:NvmeCmdObj, ioctlNum):
-    with open(dev, 'r') as fd:
-	    # max xfer size = 0x200 sector
-        res = ioctl(fd, ioctlNum, cmd.to_c_array())
-        if res != 0:
-            msg = "ioctl error = " + hex(res) + CRLF
-            msg += "cmd = " + str(cmd)
-            raise Exception(msg)
 
 def send_nvme_cmd(dev, cmd:NvmeCmdObj, writeBuf = None):
     ioctlNum = 0
