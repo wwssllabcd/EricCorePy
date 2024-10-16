@@ -48,80 +48,64 @@ class FileObj:
         self.isFile = True
 
 class EricUtility:
-    def make_table_crlf(self, cnt):
-        res = ""
-        if cnt != 0:
+    def make_table_crlf(self, parts, cnt):
+        if cnt !=0:
             if (cnt % 0x10) == 0:
-                res += CRLF
+                parts.append(CRLF)
             if (cnt % 0x200) == 0:
-                res += CRLF
-        return res
+                parts.append(CRLF)
 
-    def make_table_header(self, cnt):
-        res = ""
+    def make_table_header(self, parts, cnt):
         if (cnt % 0x10) == 0:
-            res += format(cnt, '04X') + "| "
-        return res
+            parts.append(format(cnt, '04X') + "| ")
+        
 
     def make_hex_table(self, dataList, maxCnt=0):
-        str1 = ""
+        parts = []
         cnt = 0
         for d in dataList:
-            str1 += self.make_table_crlf(cnt)
-            str1 += self.make_table_header(cnt)
-
-            str1 += format(d, '02X') + " "
+            self.make_table_crlf(parts, cnt)
+            self.make_table_header(parts, cnt)
+            parts.append(format(d, '02X') + " ")
             cnt += 1
-            if(cnt == maxCnt):
-                break
-        return str1
+        return ''.join(parts)
     
     def make_hex_table_4b(self, dataList, maxCnt=0):
-        str1 = ""
+        parts = []
         cnt = 0
-
-        if len(dataList) %4 != 0:
+        dataLen = len(dataList)
+        if dataLen %4 != 0:
             raise ValueError("dataList length must be a multiple of 4.")
         
-        for i in range(0, len(dataList), 4):
-            if maxCnt > 0 and cnt >= maxCnt:
-                break
-            
-            str1 += self.make_table_crlf(cnt)
-            str1 += self.make_table_header(cnt)
+        for i in range(0, dataLen, 4):
+   
+            self.make_table_crlf(parts, cnt)
+            self.make_table_header(parts, cnt)
 
-            # 確保不超出範圍，並組合 4 個字節為一個 u32
-            u32_value = 0
+            u32Value = 0
             for j in range(4):
-                if i + j < len(dataList):
-                    u32_value |= dataList[i + j] << (8 * j)
+                offset = i+j
+                if offset < dataLen:
+                    u32Value |= dataList[i + j] << (8 * j)
 
-            # 將 u32 值格式化為 8 位十六進制
-            str1 += format(u32_value, '08X') + " "
+            parts.append(format(u32Value, '08X') + " ")
             cnt += 4
+        return ''.join(parts)
 
-        return str1
-
-    def make_ascii_table(self, dataList, maxCnt=0):
-        res = ""
+    def make_ascii_table(self, dataList, makeLine=0xF):
+        parts = []
         cnt = 0
         for d in dataList:
-            c = chr(d)
-
-            if c.isprintable() == False:
-                c = "."
-
-            res += c
+            c = chr(d) if chr(d).isprintable() else "."
+            parts.append(c)  
             cnt += 1
-            if (cnt % 0x10) == 0:
-                res += CRLF
+            if (cnt & makeLine) == 0:
+                parts.append(CRLF)
 
-            if(cnt == maxCnt):
-                break
-        return res
+        return ''.join(parts)
     
-    def make_ascii_table_2b(self, dataList):
-        res = ""
+    def make_ascii_table_2b(self, dataList, makeLine=0xF):
+        parts = []  
         cnt = 0
         for i in range(0, len(dataList), 2): 
             
@@ -135,12 +119,12 @@ class EricUtility:
             c2 = chr(d2) if chr(d2).isprintable() else "."
 
             # Append the two characters together
-            res += c2 + c1
+            parts.append(c2 + c1)
             cnt += 2
 
-            if (cnt % 0x10) == 0:  # Break line after 16 bytes (8 characters)
-                res += CRLF
-        return res
+            if (cnt & makeLine) == 0:
+                parts.append(CRLF)
+        return ''.join(parts)
     
 
     def to_hex_string(self, value):
