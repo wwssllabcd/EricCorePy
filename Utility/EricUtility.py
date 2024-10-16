@@ -59,73 +59,65 @@ class EricUtility:
         if (cnt % 0x10) == 0:
             parts.append(format(cnt, '04X') + "| ")
         
-
-    def make_hex_table(self, dataList, maxCnt=0):
-        parts = []
-        cnt = 0
-        for d in dataList:
-            self.make_table_crlf(parts, cnt)
-            self.make_table_header(parts, cnt)
-            parts.append(format(d, '02X') + " ")
-            cnt += 1
-        return ''.join(parts)
-    
-    def make_hex_table_4b(self, dataList, maxCnt=0):
+    def make_hex_table(self, dataList, byteCnt=1):
         parts = []
         cnt = 0
         dataLen = len(dataList)
-        if dataLen %4 != 0:
-            raise ValueError("dataList length must be a multiple of 4.")
+
+        formatStr = '02X'
+        if byteCnt==2:
+            formatStr = '04X'
+        elif byteCnt==4:
+            formatStr = '08X'
+
+        if dataLen % byteCnt != 0:
+            raise ValueError("dataList length must be a multiple of " + str(byteCnt))
         
-        for i in range(0, dataLen, 4):
+        for i in range(0, dataLen, byteCnt):
    
             self.make_table_crlf(parts, cnt)
             self.make_table_header(parts, cnt)
 
-            u32Value = 0
-            for j in range(4):
+            value = 0
+            for j in range(byteCnt):
                 offset = i+j
                 if offset < dataLen:
-                    u32Value |= dataList[i + j] << (8 * j)
+                    value |= dataList[offset] << (8 * j)
 
-            parts.append(format(u32Value, '08X') + " ")
-            cnt += 4
+            parts.append(format(value, formatStr) + " ")
+            cnt += byteCnt
         return ''.join(parts)
 
-    def make_ascii_table(self, dataList, makeLine=0xF):
-        parts = []
-        cnt = 0
-        for d in dataList:
-            c = chr(d) if chr(d).isprintable() else "."
-            parts.append(c)  
-            cnt += 1
-            if (cnt & makeLine) == 0:
-                parts.append(CRLF)
-
-        return ''.join(parts)
-    
-    def make_ascii_table_2b(self, dataList, makeLine=0xF):
+    def make_ascii_table(self, dataList, byteCnt = 1, isBigEndian = True, makeLine=0xF):
         parts = []  
         cnt = 0
-        for i in range(0, len(dataList), 2): 
-            
-            if i+1 < len(dataList):
-                d1, d2 = dataList[i], dataList[i+1]  
-            else:
-                d1, d2 = dataList[i], 0 
+        dataLen = len(dataList)
+        for i in range(0, dataLen, byteCnt): 
 
-            # Convert both bytes to printable characters or replace with "."
-            c1 = chr(d1) if chr(d1).isprintable() else "."
-            c2 = chr(d2) if chr(d2).isprintable() else "."
+            value = []
+            for j in range(byteCnt):
+                offset = i+j
+                if offset < dataLen:
+                    d = dataList[offset]
+                    c = chr(d) if chr(d).isprintable() else "."
+                    value.append(c)
+
 
             # Append the two characters together
-            parts.append(c2 + c1)
-            cnt += 2
+            if isBigEndian:
+                value = reversed(value)
+            
+            parts.append(''.join(value))
+            cnt += byteCnt
 
             if (cnt & makeLine) == 0:
                 parts.append(CRLF)
+
         return ''.join(parts)
     
+    def make_ascii_string(self, dataList, byteCnt = 1, isBigEndian = True):
+        return self.make_ascii_table(dataList, byteCnt, isBigEndian, NULL_32)
+
 
     def to_hex_string(self, value):
         return format(value, '02X')
