@@ -341,4 +341,17 @@ class EricUtility:
     
         return words
     
-
+    def u32_to_u8_list(self, u32list, isLSB = True):
+        u8list = []
+        for num in u32list:
+            if isLSB:
+                u8list.append(num & 0xFF) 
+                u8list.append((num >> 8) & 0xFF)  
+                u8list.append((num >> 16) & 0xFF) 
+                u8list.append((num >> 24) & 0xFF)  
+            else:
+                u8list.append((num >> 24) & 0xFF)  
+                u8list.append((num >> 16) & 0xFF) 
+                u8list.append((num >> 8) & 0xFF)  
+                u8list.append(num & 0xFF) 
+        return u8list
