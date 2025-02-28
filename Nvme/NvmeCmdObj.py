@@ -7,6 +7,10 @@ BYTE_PER_SECTOR = 512
 NVME_ADMIN_IDENTIFY = 0x06
 NVME_ADMIN_GET_LOG_PAGE = 0x02
 
+#get_log_page.lid
+NVME_LOG_SMART = 0x02  
+
+
 # ------ identify CNS -----
 NVME_ID_CNS_NS = 0x00
 NVME_ID_CNS_CTRL = 0x01
@@ -30,6 +34,9 @@ NVME_IO_CMD_READ = 2
 NVME_OPC_ZONE_MGMT_SEND = 0x79
 NVME_OPC_ZONE_MGMT_RECV = 0x7A
 NVME_OPC_ZONE_APPEND = 0x7D
+
+def byte_per_sec():
+    return BYTE_PER_SECTOR
 
 class NvmeCmdObj():
     def __init__(self):
@@ -57,29 +64,9 @@ class NvmeCmdObj():
         bAry.extend(result.to_bytes(4, byteorder='little'))
         return bAry
 
-def byte_per_sec():
-    return BYTE_PER_SECTOR
+
 
 # ----------- not class --------
-def get_normal_nvme_cmd():
-    cmds = []
-    cmds.append(nvme_cmd_id_ctrler())
-    cmds.append(nvme_cmd_id_ns(1))
-    cmds.append(nvme_cmd_get_log_page(0, 0, 1))
-
-    # io cmd
-    cmds.append(nvme_cmd_lba_read(0, 0, 1))
-    cmds.append(nvme_cmd_lba_write(0, 0, 1))
-    return cmds
-
-def get_zns_nvme_cmd():
-    cmds = []
-    cmds.append(nvme_cmd_id_cns_zns(0))
-    cmds.append(nvme_cmd_set_zone(0, 0, 0, 0))
-    cmds.append(nvme_cmd_zone_append(0, 0, 1))
-    cmds.append(nvme_cmd_report_zone(0, 0, 0x3F, 0, 0, True)) 
-    return cmds
-
 def nvme_cmd_id_ctrler():
     cmd = NvmeCmdObj()
     cmd.desc = "Admin: Identify Controller"
@@ -195,3 +182,22 @@ def nvme_cmd_report_zone(nsid, slba, dataLen, zra, zrasf, isPartial):
     cmd.isAdminCmd = False
     cmd.dataLen = dataLen
     return cmd
+
+def get_normal_nvme_cmd():
+    cmds = []
+    cmds.append(nvme_cmd_id_ctrler())
+    cmds.append(nvme_cmd_id_ns(1))
+    cmds.append(nvme_cmd_get_log_page(0, NVME_LOG_SMART, 1024))
+
+    # io cmd
+    cmds.append(nvme_cmd_lba_read(0, 0, 1))
+    cmds.append(nvme_cmd_lba_write(0, 0, 1))
+    return cmds
+
+def get_zns_nvme_cmd():
+    cmds = []
+    cmds.append(nvme_cmd_id_cns_zns(0))
+    cmds.append(nvme_cmd_set_zone(0, 0, 0, 0))
+    cmds.append(nvme_cmd_zone_append(0, 0, 1))
+    cmds.append(nvme_cmd_report_zone(0, 0, 0x3F, 0, 0, True)) 
+    return cmds

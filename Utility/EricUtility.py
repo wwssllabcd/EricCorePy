@@ -11,7 +11,7 @@ from logging.handlers import RotatingFileHandler
 
 import traceback
 
-CRLF = "\r\n"
+CRLF = "\n"
 NULL_32 = 0xFFFFFFFF
 
 
@@ -59,7 +59,7 @@ class EricUtility:
         if (cnt % 0x10) == 0:
             parts.append(format(cnt, '04X') + "| ")
         
-    def make_hex_table(self, dataList, byteCnt=1):
+    def make_hex_table(self, dataList, byteCnt=1, noHeader = False):
         parts = []
         cnt = 0
         dataLen = len(dataList)
@@ -75,8 +75,9 @@ class EricUtility:
         
         for i in range(0, dataLen, byteCnt):
    
-            self.make_table_crlf(parts, cnt)
-            self.make_table_header(parts, cnt)
+            if noHeader == False:
+                self.make_table_crlf(parts, cnt)
+                self.make_table_header(parts, cnt)
 
             value = 0
             for j in range(byteCnt):
@@ -142,7 +143,7 @@ class EricUtility:
         buffer[offset+1] = (value >> 0x08) & 0xFF
         buffer[offset+0] = (value >> 0x00) & 0xFF
     
-    def get_array_value_le(self, bufList, offset):
+    def get_array_value_le(self, bufList):
         value = (bufList[3] << 24) + (bufList[2] << 16) + (bufList[1] << 8) + bufList[0]
         return value
     
@@ -174,6 +175,13 @@ class EricUtility:
         return ""
 
     def to_file(self, path, data):
+        if data == None:
+            raise Exception("to_file err: data == none")
+        
+        if len(data) == 0:
+            print("to_file err: dataLen == 0")
+            return 
+
         with open(path, 'w', -1, 'utf-8') as f:
             f.write(data)
 
