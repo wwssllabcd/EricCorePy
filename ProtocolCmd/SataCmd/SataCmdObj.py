@@ -35,7 +35,7 @@ SATA_BYET_PER_SECTOR = 512
 
 class SataCmdObj():
     def __init__(self):
-        self.fis = [0] * 16  # sata fis 16 byte
+        self.fis = bytearray(16)  # sata fis 16 byte, bytearray default value is 0
         self.isDataIn = True
         self.dataLen = 0
         self.desc = ""
@@ -83,8 +83,8 @@ class SataCmdSet():
         return cmd
     
     def get_cmd_colls(self):
-        cmds = []
-        cmds.append(self.identify())
-        cmds.append(self.smart(SMART_READ_DATA))
-        return cmds
+        cmdSet = []
+        cmdSet.append(self.identify())
+        cmdSet.append(self.smart(SMART_READ_DATA))
+        return cmdSet
     

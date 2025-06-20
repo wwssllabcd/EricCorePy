@@ -1,5 +1,5 @@
-from EricCorePy.Nvme.NvmeCmdObj import *
-from EricCorePy.Nvme.NvmeIoCtrl import *
+from EricCorePy.ProtocolCmd.Nvme.NvmeCmdObj import *
+from EricCorePy.ProtocolCmd.Nvme.NvmeIoCtrl import *
 
 def get_nvme_cmd_obj(devNvmeXnY):
     nsid = int(devNvmeXnY[11])

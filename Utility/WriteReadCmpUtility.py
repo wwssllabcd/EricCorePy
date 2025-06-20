@@ -2,18 +2,17 @@ import random
 
 from EricCorePy.Utility.EricUtility import *
 from EricCorePy.Utility.EricException import *
-from EricCorePy.Nvme.NvmeCmdObj import byte_per_sec
+from EricCorePy.ProtocolCmd.Nvme.NvmeCmdObj import byte_per_sec
 
 
 
 class WriteReadCmpUtility:
-    def __init__(self, lba_write, lba_read, recordFunc):
+    def __init__(self, lba_write, lba_read, recordFunc=None):
         self._lba_write = lba_write 
         self._lba_read = lba_read
-        self._writeCnt = 0
+        self._testCnt = 0
 
-        if recordFunc != None:
-            self._recordFun = recordFunc
+        self._recordFun = recordFunc
             
     def get_elba(self, endLba, idnsBuf):
         u = EricUtility()
@@ -97,23 +96,26 @@ class WriteReadCmpUtility:
             if self.is_overwrite_record_lba(lba, secCnt, recordLba) == False:
                 return lba, secCnt
             
-    
-    def one_write_read_cmp(self, lba, secCnt, writeBuf, isNoWrite, isNoRead, isShowTime):
+    def eprint(*args, **kwargs):
+        return " ".join(map(str, args))
+
+    def one_write_read_cmp(self, lba, secCnt, writeBuf, isNoWrite, isNoRead, isShowTime, send_msg):
         strTimes = ""
         if isShowTime:
-            self._writeCnt+=1
-            strTimes = "(" + hex(self._writeCnt) +")"
+            self._testCnt+=1
+            strTimes = "(" + hex(self._testCnt) +")"
 
         if isNoWrite == False:
-            eprint(strTimes + "write lba = " + hex(lba) + ", sec = " + hex(secCnt))
+            send_msg(strTimes + "write lba = " + hex(lba) + ", sec = " + hex(secCnt))
             self.lba_write(lba, secCnt, writeBuf)
 
         if isNoRead:
             return 
 
-        eprint(strTimes + " read lba = " + hex(lba) + ", sec = " + hex(secCnt))
+        send_msg(strTimes + "read lba = " + hex(lba) + ", sec = " + hex(secCnt), True)
         readBuf = self.lba_read(lba, secCnt)
         self.compare_two_buffer(lba, secCnt, writeBuf, readBuf)
+   
         return readBuf
     
     def verify_record(self, writeRecord):

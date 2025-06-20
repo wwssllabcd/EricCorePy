@@ -1,6 +1,12 @@
 
-from EricCorePy.Nvme.NvmeCmdObj import *
+from EricCorePy.ProtocolCmd.Nvme.NvmeCmdObj import *
 import struct
+
+
+def key_value_to_string(dic:dict):
+    lines = [f"{k} = {v}" for k, v in dic.items()]
+    return "\n".join(lines)
+
 
 def parser_nvme_id_ns(cmd: NvmeCmdObj, buffer: bytearray):
     
@@ -39,8 +45,7 @@ def parser_nvme_id_ns(cmd: NvmeCmdObj, buffer: bytearray):
         'RESCAP': hex(values[10]),
     }
 
-    lines = [f"{k}={v}" for k, v in namespace_data.items()]
-    return "\n".join(lines)
+    return key_value_to_string(namespace_data)
 
 def parser_nvme_id_ctrler(cmd: NvmeCmdObj, data):
     if len(data) != 4096:
@@ -129,9 +134,7 @@ def parser_nvme_id_ctrler(cmd: NvmeCmdObj, data):
             power_states.append(f"PS{i}: {mp}mW")
     result['power_states'] = ", ".join(power_states)
 
-
-    lines = [f"{k}={v}" for k, v in result.items()]
-    return "\n".join(lines)
+    return key_value_to_string(result)
 
 
 def parser_nvme_identify(cmd: NvmeCmdObj, buffer):
@@ -141,6 +144,7 @@ def parser_nvme_identify(cmd: NvmeCmdObj, buffer):
     elif cns == NVME_ID_CNS_NS:
         return parser_nvme_id_ns(cmd, buffer)
     return None
+
 
 def parser_get_log_page_smart(cmd: NvmeCmdObj, data):
     result = {}
@@ -217,9 +221,9 @@ def parser_get_log_page_smart(cmd: NvmeCmdObj, data):
         if temp > 0:  # Only include non-zero temperature sensors
             result[f'temp_sensor_{i}'] = f"{temp - 273 if temp > 0 else 0}°C"
 
-    
-    lines = [f"{k}={v}" for k, v in result.items()]
-    return "\n".join(lines)
+    return key_value_to_string(result)
+
+
 
 def parser_get_log_page(cmd: NvmeCmdObj, buffer):
     lid = cmd.cdws[10] & 0xFF

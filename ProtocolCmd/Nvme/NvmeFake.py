@@ -1,5 +1,5 @@
-from EricCorePy.Nvme.NvmeCmdObj import *
-from EricCorePy.Nvme.NvmeConst import *
+from EricCorePy.ProtocolCmd.Nvme.NvmeCmdObj import *
+from EricCorePy.ProtocolCmd.Nvme.NvmeConst import *
 from EricCorePy.Utility.EricUtility import *
 from EricCorePy.Utility.EricException import *
 

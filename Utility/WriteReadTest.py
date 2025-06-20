@@ -1,6 +1,6 @@
 import ctypes
 from EricCorePy.Utility.EricUtility import *
-from EricCorePy.Nvme.NvmeCmdObj import byte_per_sec
+from EricCorePy.ProtocolCmd.Nvme.NvmeCmdObj import byte_per_sec
 import random
 
 class WriteReadTest:

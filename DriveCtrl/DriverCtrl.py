@@ -1,7 +1,7 @@
 from ctypes import *
 import ctypes
 import os
-from .ScsiCmd.ScsiCmdUtility import *
+from ..ProtocolCmd.ufi.UfiCmd import *
 
 CDB_SIZE = 16
 

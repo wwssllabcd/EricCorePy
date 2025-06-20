@@ -1,8 +1,8 @@
 from fcntl import ioctl
 
-from EricCorePy.Nvme.NvmeCmdObj import *
-from EricCorePy.Nvme.NvmeFake import *
-from EricCorePy.Nvme.NvmeIoCtrlLinux import *
+from EricCorePy.ProtocolCmd.Nvme.NvmeCmdObj import *
+from EricCorePy.ProtocolCmd.Nvme.NvmeFake import *
+from EricCorePy.ProtocolCmd.Nvme.NvmeIoCtrlLinux import *
 
 from EricCorePy.Utility.EricUtility import CRLF
 from EricCorePy.Utility.CtypeUtility import *

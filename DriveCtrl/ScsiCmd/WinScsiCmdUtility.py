@@ -1,5 +1,5 @@
 from EricCorePy.DriveCtrl.ScsiCmd.WinScsiPassThrough import *
-from EricCorePy.DriveCtrl.ScsiCmd.ScsiCmdObj import *
+from EricCorePy.DriveCtrl.ScsiCmd.ScsiCmdBase import *
 
 
 def send_scsi_cmd(handle, cmd: ScsiCmdObj, writeBuffer:bytearray=None):

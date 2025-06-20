@@ -1,5 +1,5 @@
 from fcntl import ioctl
-from EricCorePy.Nvme.NvmeCmdObj import *
+from EricCorePy.ProtocolCmd.Nvme.NvmeCmdObj import *
 
 def ioc(dir, type, nr, size):
     return (dir << 30) | (size << 16) | (type << 8) | nr

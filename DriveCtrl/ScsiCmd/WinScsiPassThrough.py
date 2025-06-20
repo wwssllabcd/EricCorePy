@@ -38,7 +38,7 @@ def win_scsi_pass_through_direct(handle, cdb, byteArray: bytearray, direction=SC
 
     bytes_returned = c_uint32()
 
-    result = ctypes.windll.kernel32.DeviceIoControl(
+    success = ctypes.windll.kernel32.DeviceIoControl(
         handle,
         IOCTL_SCSI_PASS_THROUGH_DIRECT,
         ctypes.byref(sptd),
@@ -49,7 +49,9 @@ def win_scsi_pass_through_direct(handle, cdb, byteArray: bytearray, direction=SC
         None
     )
 
-    if result == 0:
+    if success == False:
+        errorCode = ctypes.windll.kernel32.GetLastError()
+        print("GetLastError = " + str(errorCode))
         raise ctypes.WinError()
 
     return byteArray

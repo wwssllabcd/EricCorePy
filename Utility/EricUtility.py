@@ -131,17 +131,38 @@ class EricUtility:
             return int(string, 16)
         return int(string)
 
+    def hide_console():
+        ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)
+
     def is_admin_in_windows(self):
         try:
             return ctypes.windll.shell32.IsUserAnAdmin()
-        except Exception as e:
+        except:
             return False
 
+    def run_as_admin(self):
+        if self.is_admin_in_windows():
+            return True
+
+        # 重新啟動自己並請求管理員權限
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+        sys.exit() # 把自己退開，之後會喚起另一個，否則會有兩個
+        return False
+
+    def set_u32_to_list(self, bufList, offset, value, isMSB = True):
+        if isMSB:
+            bufList[offset+0] = (value >> 0x18) & 0xFF
+            bufList[offset+1] = (value >> 0x10) & 0xFF
+            bufList[offset+2] = (value >> 0x08) & 0xFF
+            bufList[offset+3] = (value >> 0x00) & 0xFF
+        else:
+            bufList[offset+0] = (value >> 0x00) & 0xFF
+            bufList[offset+1] = (value >> 0x08) & 0xFF
+            bufList[offset+2] = (value >> 0x10) & 0xFF
+            bufList[offset+3] = (value >> 0x18) & 0xFF
+
     def set_array_value_le(self, buffer, value, offset=0):
-        buffer[offset+3] = (value >> 0x18) & 0xFF
-        buffer[offset+2] = (value >> 0x10) & 0xFF
-        buffer[offset+1] = (value >> 0x08) & 0xFF
-        buffer[offset+0] = (value >> 0x00) & 0xFF
+        self.set_u32_to_list(buffer, offset, value, False)
     
     def get_array_value_le(self, bufList):
         value = (bufList[3] << 24) + (bufList[2] << 16) + (bufList[1] << 8) + bufList[0]
@@ -160,6 +181,26 @@ class EricUtility:
         value += bufList[offset+2] << 8
         value += bufList[offset+3]
         return value
+    
+    def get_value(self, ary, byteCnt):
+        val = 0
+        if byteCnt==2:
+            val =  (ary[1] << 8) + ary[0]
+        elif byteCnt==4:
+            val =  (ary[3] << 24) + (ary[2] << 16) + (ary[1] << 8) + ary[0]
+        else:
+            raise Exception("wrong byteCnt=", str(byteCnt))
+        return val
+    
+    def get_u32_from_list(self, bufList, offset, isMSB = True):
+        if isMSB:
+            value = (bufList[offset+0] << 24) + (bufList[offset+1] << 16) + (bufList[offset+2] << 8) + (bufList[offset+3])
+        else:
+            value = (bufList[offset+3] << 24) + (bufList[offset+2] << 16) + (bufList[offset+1] << 8) + (bufList[offset+0])
+        return value
+     
+
+ 
 
     def crlf(self):
         return CRLF

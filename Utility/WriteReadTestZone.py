@@ -1,8 +1,8 @@
 import ctypes
 from EricCorePy.Utility.EricUtility import *
-from EricCorePy.Nvme.NvmeCmdObj import byte_per_sec
+from EricCorePy.ProtocolCmd.Nvme.NvmeCmdObj import byte_per_sec
 import random
-from EricCorePy.Nvme.ReportZonesObj import *
+from EricCorePy.ProtocolCmd.Nvme.ReportZonesObj import *
 
 class WriteReadTestZone:
     def __init__(self, wrcu, zoneSize, nrZone):
