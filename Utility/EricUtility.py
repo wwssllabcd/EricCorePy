@@ -362,6 +362,9 @@ class EricUtility:
     
     def get_time_now(self):
         return datetime.now()
+    
+    def get_time_now_str(self):
+        return datetime.now().strftime("%Y%m%d-%H%M%S") 
 
     def show_exception(self, e):
         eprint(f"Exception: {e}")
