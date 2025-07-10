@@ -1,13 +1,14 @@
 import sys
 import ctypes
 import shutil  # file move
+import os
 from os import listdir
 from os.path import isfile, join
-from os import walk
 from pathlib import Path
 from datetime import datetime
 import logging
 from logging.handlers import RotatingFileHandler
+
 
 import traceback
 
@@ -199,9 +200,6 @@ class EricUtility:
             value = (bufList[offset+3] << 24) + (bufList[offset+2] << 16) + (bufList[offset+1] << 8) + (bufList[offset+0])
         return value
      
-
- 
-
     def crlf(self):
         return CRLF
 
@@ -407,3 +405,21 @@ class EricUtility:
                 u8list.append((num >> 8) & 0xFF)  
                 u8list.append(num & 0xFF) 
         return u8list
+    
+        
+    def to_file_lazy(content_iterator, output_filepath, showproc_callback=None):
+        total_chunk_size = 0 
+        with open(output_filepath, 'wb') as f:
+            for chunk, total_size in content_iterator:
+                f.write(chunk)
+                total_chunk_size += len(chunk)
+                if showproc_callback != None:
+                    showproc_callback(total_chunk_size, total_size, output_filepath)
+
+    def show_progress(currentCnt, totalCnt, file_path):
+        if totalCnt > 0:
+            progress = (currentCnt / totalCnt) * 100
+            sys.stdout.write(f"\r {os.path.basename(file_path)}: {progress:.2f}% ({currentCnt / (1024*1024):.2f}/{totalCnt / (1024*1024):.2f} MB)")
+        else:
+            sys.stdout.write(f"\r {os.path.basename(file_path)}: {currentCnt / (1024*1024):.2f} MB (總大小未知)")
+        sys.stdout.flush()
