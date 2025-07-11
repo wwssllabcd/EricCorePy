@@ -407,7 +407,7 @@ class EricUtility:
         return u8list
     
         
-    def to_file_lazy(content_iterator, output_filepath, showproc_callback=None):
+    def to_file_lazy(self, content_iterator, output_filepath, showproc_callback=None):
         total_chunk_size = 0 
         with open(output_filepath, 'wb') as f:
             for chunk, total_size in content_iterator:
@@ -416,7 +416,7 @@ class EricUtility:
                 if showproc_callback != None:
                     showproc_callback(total_chunk_size, total_size, output_filepath)
 
-    def show_progress(currentCnt, totalCnt, file_path):
+    def show_progress(self, currentCnt, totalCnt, file_path):
         if totalCnt > 0:
             progress = (currentCnt / totalCnt) * 100
             sys.stdout.write(f"\r {os.path.basename(file_path)}: {progress:.2f}% ({currentCnt / (1024*1024):.2f}/{totalCnt / (1024*1024):.2f} MB)")

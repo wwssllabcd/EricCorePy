@@ -82,7 +82,7 @@ class UrlUtility:
         str.replace(replace, "charset=UTF-8")
         return data
     
-    def get_content_stream_lazy(url, headers=None, chunk_size=131072):
+    def get_content_stream_lazy(self, url, headers=None, chunk_size=131072):
         try:
             with requests.get(url, headers=headers, stream=True) as response:
                 response.raise_for_status() # 檢查 HTTP 狀態碼
