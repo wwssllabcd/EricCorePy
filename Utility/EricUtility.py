@@ -411,6 +411,9 @@ class EricUtility:
         total_chunk_size = 0 
         with open(output_filepath, 'wb') as f:
             for chunk, total_size in content_iterator:
+                # content_iterator something wrong, force return
+                if chunk == None:
+                    return 
                 f.write(chunk)
                 total_chunk_size += len(chunk)
                 if showproc_callback != None:

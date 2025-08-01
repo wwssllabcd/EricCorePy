@@ -91,5 +91,5 @@ class UrlUtility:
                     if chunk: # 過濾掉空的 chunk
                         yield chunk, total_size
         except requests.exceptions.RequestException as e:
-            print(f"下載失敗: {e}")
+            print(f"\nget_content_stream_lazy: {e}")
             yield None, 0
