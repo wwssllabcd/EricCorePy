@@ -29,13 +29,18 @@ class SqliteUtility:
     def close(self):
         self.clear_connect()
 
-    # for example: "INSERT INTO employees VALUES(1, 'John', 700, 'HR', 'Manager', '2017-01-04')"
+    # ex: "INSERT OR REPLACE INTO employees VALUES(1, 'John', 700, 'HR', 'Manager', '2017-01-04')"
     def insert(self, table, value):
-        sql = 'INSERT INTO ' + table + ' VALUES ' + value
+        sql = 'INSERT OR REPLACE INTO ' + table + ' VALUES ' + value
         c = self.m_conn.cursor()
         c.execute(sql)
         self.m_conn.commit()
 
-    def gen_sql_insert_string(self, nameObj):
-        sql =  "('" + nameObj.fullName + "', '" + nameObj.catolog + "', " + str(nameObj.number) + ", '" + nameObj.actor + "')"
-        return sql
+
+    # ex: "Select id, name from myTable where id = 12345"
+    def query(self, table, field, whereVal):
+        sql = f'SELECT {field} FROM {table} WHERE {whereVal}'
+        c = self.m_conn.cursor()
+        c.execute(sql)
+        return c.fetchone()
+        
