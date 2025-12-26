@@ -63,9 +63,8 @@ class WriteReadCmpUtility:
 
             msg = "fail Read Lba = " + hex(lba) + ", secCnt = " + hex(secCnt) + CRLF + u.make_hex_table(readBuf)
             u.to_file("failReadBuf.txt", msg)
-        
-
             raise Exception("compare_two_buffer fail")
+        
 
     def get_random_lba_len(self, rdm, maxLba, maxSecCnt, step):
         secCnt = rdm.randrange(1, maxSecCnt)
@@ -115,6 +114,8 @@ class WriteReadCmpUtility:
         send_msg(strTimes + "read lba = " + hex(lba) + ", sec = " + hex(secCnt), True)
         readBuf = self.lba_read(lba, secCnt)
         self.compare_two_buffer(lba, secCnt, writeBuf, readBuf)
+
+        send_msg(strTimes + "pass", True)
    
         return readBuf
     

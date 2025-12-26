@@ -50,7 +50,9 @@ class SataCmdSet():
 
         cmd.fis[2] = SATA_OPC_IDENTIFY
         cmd.fis[7] = 0x40 # for LBA mode 
-        cmd.fis[0xC] = 1  # count
+        
+        cmd.fis[0xC] = 1  # count_L
+        cmd.fis[0xD] = 0  # count_H
 
         cmd.desc = "Identify"
         cmd.isDataIn = True
