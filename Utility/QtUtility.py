@@ -1,12 +1,16 @@
 
-from PySide6.QtWidgets import (QApplication, QTextEdit, QComboBox, QCheckBox)
+from PySide6.QtWidgets import (QApplication, QTextEdit, QComboBox, QCheckBox, QFileDialog)
 from PySide6.QtGui import QTextCursor
 
+import os
 from EricCorePy.Utility.EricUtility import CRLF
 
 class QtUtility:
     KEY_EVENT_PAGE_UP = 16777238
     KEY_EVENT_PAGE_DOWN = 16777239
+
+    def __init__(self):
+        self.m_last_open_dir = "."
 
     def set_combobox(self, cbobox: QComboBox, itemList):
         cbobox.clear()
@@ -57,4 +61,18 @@ class QtUtility:
         else:
             txtEditor.setPlainText(txt)
         self.upadte_ui()
+
+    def get_file_path(self):
+        file_path, _ = QFileDialog.getOpenFileName(
+            parent=None,           
+            caption="選取檔案",      
+            dir=self.m_last_open_dir,              
+            filter="所有檔案 (*);;文字檔案 (*.txt);;Python 檔案 (*.py)" 
+        )
+
+        if not file_path:
+            print("使用者取消了選擇")
+
+        self.m_last_open_dir = os.path.dirname(file_path)
+        return file_path
   

@@ -43,4 +43,3 @@ class SqliteUtility:
         c = self.m_conn.cursor()
         c.execute(sql)
         return c.fetchone()
-        

@@ -155,5 +155,5 @@ class UfiCmdSet:
     
 
     def get_cmd_colls(self):
-        cmdColl = [self.inquiry(), self.write_10(), self.read_10(),  self.ata_pass_through_12(), self.sat_12_cmd(0xEC, 0x40, 0, 0, True, 1)]
+        cmdColl = [self.read_10(), self.inquiry(), self.write_10(), self.ata_pass_through_12(), self.sat_12_cmd(0xEC, 0x40, 0, 0, True, 1)]
         return cmdColl
