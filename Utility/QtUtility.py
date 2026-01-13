@@ -65,13 +65,13 @@ class QtUtility:
     def get_file_path(self):
         file_path, _ = QFileDialog.getOpenFileName(
             parent=None,           
-            caption="選取檔案",      
+            caption="select file",      
             dir=self.m_last_open_dir,              
-            filter="所有檔案 (*);;文字檔案 (*.txt);;Python 檔案 (*.py)" 
+            filter="All file (*);;Txt file(*.txt);;Python file(*.py)" 
         )
 
         if not file_path:
-            print("使用者取消了選擇")
+            print("cancel")
 
         self.m_last_open_dir = os.path.dirname(file_path)
         return file_path
