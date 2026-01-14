@@ -62,17 +62,28 @@ class QtUtility:
             txtEditor.setPlainText(txt)
         self.upadte_ui()
 
-    def get_file_path(self):
+    def get_file_path(self, defFilter="All file(*.*)"):
         file_path, _ = QFileDialog.getOpenFileName(
             parent=None,           
             caption="select file",      
             dir=self.m_last_open_dir,              
-            filter="All file (*);;Txt file(*.txt);;Python file(*.py)" 
+            filter=defFilter 
         )
 
-        if not file_path:
-            print("cancel")
+        if file_path:
+            self.m_last_open_dir = os.path.dirname(file_path)
+        return file_path
+    
+    def get_save_file_path(self, defaultName, defFilter="All File(*.*)"):
+        defFilePath = os.path.join(self.m_last_open_dir, defaultName)
+        file_path, _ = QFileDialog.getSaveFileName(
+            parent=None,
+            caption="Save as ..",
+            dir=defFilePath, 
+            filter=defFilter 
+        )
 
+        if file_path:
         self.m_last_open_dir = os.path.dirname(file_path)
         return file_path
   
