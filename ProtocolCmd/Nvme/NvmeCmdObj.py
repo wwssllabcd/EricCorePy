@@ -45,6 +45,7 @@ class NvmeCmdObj():
         self.isDataIn = True
         self.dataLen = 0
         self.desc = ""
+        self.tooltip = ""
 
     def __str__(self) -> str:
         msg = "NvmeCmd" + CRLF

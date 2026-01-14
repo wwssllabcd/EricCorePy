@@ -104,7 +104,7 @@ class UfiCmdSet:
             cmd.direct = SCSI_IOCTL_DATA_OUT
         return cmd
 
-    def sat_16_cmd(self, fis, isDataIn):
+    def sat_16_cmd(self, fis, dataLen, isDataIn):
         cmd = ScsiCmdBase()
         if isDataIn:
             t_dir = 1 # data-in
@@ -145,7 +145,7 @@ class UfiCmdSet:
         cmd.cdb[15] = fis[0xF]  
 
         cmd.desc = "SCSI: sat_16"
-        cmd.dataLen = secCnt * BYTE_PER_SECTOR
+        cmd.dataLen = dataLen
         
         if isDataIn:
             cmd.direct = SCSI_IOCTL_DATA_IN

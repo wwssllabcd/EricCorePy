@@ -6,8 +6,9 @@ class ScsiCmdBase:
     def __init__(self):
         self.cdb = bytearray(16)
         self.dataLen = 0
-        self.desc = ""
         self.direct = SCSI_IOCTL_DATA_IN
+        self.desc = ""
+        self.tooltip = ""
     
     def __str__(self):
         u = EricUtility()

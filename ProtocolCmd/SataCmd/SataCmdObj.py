@@ -39,6 +39,7 @@ class SataCmdObj():
         self.isDataIn = True
         self.dataLen = 0
         self.desc = ""
+        self.tooltip = ""
 
         self.fis[0] = SATA_FIS_H2D
         self.fis[1] = 0x80 # Command Register
