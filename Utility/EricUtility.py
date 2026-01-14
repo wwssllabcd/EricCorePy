@@ -221,6 +221,13 @@ class EricUtility:
             print("to_file err: dataLen == 0")
             return 
 
+        isBinData = False
+        if isinstance(data, bytearray) or isinstance(data, bytes):
+            isBinData = True
+        if isBinData:
+            with open(path, 'wb') as f:
+                f.write(data)
+        else:
         with open(path, 'w', -1, 'utf-8') as f:
             f.write(data)
 
@@ -362,7 +369,7 @@ class EricUtility:
         return datetime.now()
     
     def get_time_now_str(self):
-        return datetime.now().strftime("%Y%m%d-%H%M%S") 
+        return datetime.now().strftime("%Y%m%d_%H%M%S") 
 
     def show_exception(self, e):
         eprint(f"Exception: {e}")
