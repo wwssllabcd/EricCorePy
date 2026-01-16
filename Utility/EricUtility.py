@@ -228,8 +228,8 @@ class EricUtility:
             with open(path, 'wb') as f:
                 f.write(data)
         else:
-        with open(path, 'w', -1, 'utf-8') as f:
-            f.write(data)
+            with open(path, 'w', -1, 'utf-8') as f:
+                f.write(data)
 
     def is_file_exist(self, path):
         file = Path(path)
